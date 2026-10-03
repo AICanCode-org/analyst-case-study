@@ -57,3 +57,14 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
 * **How I verified it:** every remaining objection maps to a line in requirements §4 or §7.
 * **Time saved / lost (honest guess):** saved ~30 minutes of review later.
 * **What I learned:** a threshold in rupees is what turns "significant" into a decision.
+
+### 2026-07-03 · Phase 2 · Checking a CMH example
+* **Tool / model:** ChatGPT (free tier)
+* **Prompt (summary or paste):**
+  > Prompt 2 of Phase 2 (CMH and Simpson's paradox with made-up 2x2 tables).
+* **What it produced:** a clear explanation and two strata whose Mantel-Haenszel odds ratio it gave as 0.62.
+* **What I kept / changed / rejected, and why:** kept the explanation; the number was wrong: by hand
+  Σ(ad/n) / Σ(bc/n) = 0.71 for its own tables.
+* **How I verified it:** recomputed by hand and with `statsmodels.stats.contingency_tables.StratifiedTable`.
+* **Time saved / lost (honest guess):** saved ~20 minutes of reading; the wrong number would have cost more.
+* **What I learned:** never trust arithmetic in an explanation; recompute every example.
