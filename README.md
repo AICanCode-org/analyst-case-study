@@ -3,6 +3,82 @@
 [![CI](https://github.com/AICanCode-org/analyst-case-study/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AICanCode-org/analyst-case-study/actions/workflows/ci.yml)
 [![CI (solution)](https://github.com/AICanCode-org/analyst-case-study/actions/workflows/ci.yml/badge.svg?branch=solution)](https://github.com/AICanCode-org/analyst-case-study/actions/workflows/ci.yml?query=branch%3Asolution)
 
+## Case study (reference solution)
+
+> **Mobile is 69 % of FunnelLens's sessions but 61 % of its revenue. The data does not support a
+> mobile checkout rebuild; it supports a targeted experiment on the mobile payment step. The analysis
+> is built three times, in Python, SQL and R, against one written spec, and every track produces the
+> same `answers.json` to 1e-9.**
+
+```console
+$ docker compose --profile pipelines run --rm --no-deps parity
+IDENTICAL  /out/sql/answers.json (sql)
+IDENTICAL  /out/r/answers.json (r)
+$ jq '.decision.recommendation, .by_channel.cmh.purchase_given_checkout.odds_ratio_mh' tracks/r/out/answers.json
+"run_targeted_experiment"
+0.7254582744768108
+```
+
+**Problem → answer.** The Head of Product wanted to rebuild the mobile checkout (a quarter of
+engineering time). After cleaning a deliberately messy export (17 counted issue types: duplicate and
+conflicting ids, two date formats, rupee amounts as text, orphan rows, out-of-order funnel events),
+the analysis finds:
+
+- The aggregate mobile cart gap (−4.5 points) is **channel mix** (Simpson's paradox): within channels,
+  mobile carts at least as well as desktop (cart-step CMH odds ratio 1.08).
+- The real gap is the **payment step**: 54.4 % of mobile checkouts end in a purchase against 65.6 %
+  on desktop; adjusted for channel, CMH odds ratio **0.71 (95 % CI 0.62-0.81), p = 6.4e-7** (2026-06; 0.73 on the
+  2026-08 refresh).
+- Mobile and desktop orders are worth the same (₹2,001 vs ₹1,967, Welch p = 0.53), so the gap is in
+  conversion, not basket size.
+- Closing the payment gap is worth about **₹16 lakh/month**, below the ₹25 lakh/month that justifies a
+  rebuild. Recommendation: **run a targeted experiment on the mobile payment step** (UPI first: 1,252 of
+  2,072 mobile orders in 2026-08).
+
+**Decisions I'd defend in an interview** ([analysis plan](spec/analysis-plan.md)):
+[read raw files as text](spec/adr/0001-read-raw-files-as-text.md) ·
+[CMH-adjusted primary test](spec/adr/0002-cmh-adjusted-primary-test.md) ·
+[one answers contract, three tracks](spec/adr/0003-one-answers-contract-three-tracks.md) ·
+[contract checks with severities](spec/adr/0004-contract-checks-with-severities.md) ·
+[AI narrator: facts in, guardrails out](spec/adr/0005-ai-narrator-facts-and-guardrails.md) ·
+[versioned contract and monitoring](spec/adr/0006-versioned-contract-and-monitoring.md).
+
+**Evidence**
+
+| | Python (pandas, Jupyter) | SQL (DuckDB) | R (tidyverse, R Markdown) | Dashboard |
+|---|---|---|---|---|
+| Tests v1.1.0 (unit + data + golden + invariants) | 93 | 97 | 66 `test_that` blocks | 49 |
+| Line coverage (gate 85 %) | 99 % | 96 % | 99.5 % | 97 % |
+| Parity with the golden answers (2026-06, 2026-08, `--backcompat`) | IDENTICAL | IDENTICAL | IDENTICAL | |
+
+The Docker smoke test passes against the dashboard image of v1.0.0 and v1.1.0, also with the AI
+provider unreachable (the narrator falls back to its template and says so). Images: dashboard ~560 MB,
+python ~480 MB, R ~300 MB, SQL ~260 MB, all non-root with a read-only file system.
+
+- **Data contract:** declarative checks with severities; an `error` stops the run (exit 3) instead of
+  producing numbers on changed data. On the August refresh it stopped v1.0 on a new channel
+  (`referral`) and led to contract 1.1.0, with 1.0.0 kept for reproducibility.
+- **Monitoring and an incident:** weekly monitoring found 2026-W31, where app release 8.14 lost about
+  70 % of mobile checkout events (mobile checkout-given-cart 10.7 % against a 53.4 % median). The week is
+  excluded with a [post-mortem](docs/postmortem-2026-W31.md); the effect on the decision is measured
+  (₹14.1 vs ₹14.3 lakh/month) and nil.
+- **AI narrator:** an optional OpenAI-compatible model writes the executive summary from numbered
+  aggregate facts; guardrails reject invented numbers, unknown citations, causal claims and a missing
+  caveat, with a deterministic fallback. It never sees row-level data and needs no paid key.
+
+**How I used AI.** Assistants drafted code, tests and docs; every entry is in
+[`AI_LOG.md`](AI_LOG.md). Rejected: a one-line timestamp parser that read day-first dates month
+first, an "unexpected channel → unknown" fix that would have hidden the referral programme, a CMH
+interval with a wrong variance term (caught by the stats fixture), and an ML anomaly detector where a
+median rule was enough. The three-track parity check caught an ambiguity in the spec itself (when to
+count unknown channels relative to the week exclusion), fixed by one sentence in `questions.md`.
+
+**Limits and next steps.** The data is observational and sampled (1 in 20): the payment gap holds
+within channels but other differences between mobile and desktop users could explain part of it.
+Next: design and size the experiment (mobile UPI users, primary metric payment completion, guardrail
+on order value), run the pipeline weekly on a schedule (post-mortem action 1), and revisit the median
+monitoring rule once the history covers a season.
+
 FunnelLens is a guided project from **[AiCanCode](https://www.aicancode.org)**, the capstone of the
 Data Analyst track. Over 9 phases (about 32 hours) you carry **one messy dataset the whole way**, the
 way a professional analytics team does: requirements, a data contract and an analysis plan, a
