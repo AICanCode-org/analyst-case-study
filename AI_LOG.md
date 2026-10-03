@@ -32,3 +32,14 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
 ## My entries
 
 <!-- Start below this line. Phase 0 asks you to write your first entry. -->
+
+### 2026-07-01 · Phase 0 · Installing the R track on WSL
+* **Tool / model:** Gemini 2.0 Flash (free tier)
+* **Prompt (summary or paste):**
+  > Prompt 1 of Phase 0 with the output of `scripts/doctor.sh` (R found, packages and pandoc missing).
+* **What it produced:** `sudo apt install r-base pandoc`, then `install.packages("tidyverse")`.
+* **What I kept / changed / rejected, and why:** kept the apt line; rejected installing the whole
+  tidyverse (60+ packages) and used `make install` instead, which installs only what `DESCRIPTION` lists.
+* **How I verified it:** `scripts/doctor.sh` all green for the R track; `make lint test` (all skipped).
+* **Time saved / lost (honest guess):** saved ~20 minutes.
+* **What I learned:** the project's own install target is the source of truth, not a generic answer.
