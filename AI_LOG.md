@@ -115,3 +115,16 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
 * **How I verified it:** parity IDENTICAL for the three tracks and the golden file after the change.
 * **Time saved / lost (honest guess):** neutral; the value was finding it before a stakeholder did.
 * **What I learned:** two independent implementations are the best review a spec can get.
+
+### 2026-07-17 · Phase 5 · Caching the R packages
+* **Tool / model:** Copilot Chat
+* **Prompt (summary or paste):**
+  > Make the R job faster: it installs the tidyverse from source on every run.
+* **What it produced:** an `actions/cache` step on `~/R/library` keyed by the date.
+* **What I kept / changed / rejected, and why:** rejected; a date key never invalidates on a
+  `DESCRIPTION` change. Used `r-lib/actions/setup-r-dependencies@v2` (keyed by the dependencies) with
+  binary packages from Posit Public Package Manager (`use-public-rspm: true`).
+* **How I verified it:** the second run's R job took 2 minutes instead of 14; changing `DESCRIPTION`
+  produced a cache miss as expected.
+* **Time saved / lost (honest guess):** saved ~10 minutes per CI run.
+* **What I learned:** a cache key must change exactly when its content should.
