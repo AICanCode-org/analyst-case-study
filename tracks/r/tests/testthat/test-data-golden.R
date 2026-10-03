@@ -1,25 +1,13 @@
 # Phase 4 data test: the full 2026-06 export must reproduce the golden answers that the Python,
 # SQL and R tracks agree on (contract/golden/answers-2026-06.json).
+# v1.1: that golden is the v1.0 file and stays frozen, so the comparison allows the additive v1.1 fields.
 skip_if_pending("test-data-golden.R")
 
 answers <- as_json_lists(analyse(EXPORT_V10))
 
-#' The same comparison as scripts/parity.py: numbers to 1e-9 relative, everything else exactly.
-json_diff <- function(a, b, path = "$") {
-  if (is.list(a) && is.list(b)) {
-    if (!identical(sort(names(a)), sort(names(b))) || length(a) != length(b)) return(path)
-    keys <- if (is.null(names(a))) seq_along(a) else setdiff(names(a), "generator")
-    return(unlist(lapply(keys, function(k) json_diff(a[[k]], b[[k]], paste0(path, "/", k)))))
-  }
-  if (is.numeric(a) && is.numeric(b)) {
-    if (abs(a - b) <= max(1e-12, 1e-9 * abs(a))) return(NULL) else return(path)
-  }
-  if (identical(a, b)) NULL else path
-}
-
 test_that("the answers match the golden file", {
   golden <- jsonlite::read_json(file.path(CONTRACT_DIR, "golden", "answers-2026-06.json"))
-  expect_identical(json_diff(golden, answers), NULL)
+  expect_identical(json_diff(golden, answers, subset = TRUE), NULL)
 })
 
 test_that("the headline findings hold", {

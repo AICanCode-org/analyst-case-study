@@ -1,6 +1,6 @@
 # M5: answer the business questions and build answers.json (contract/answers.schema.json).
 
-SCHEMA_VERSION <- "1.0"
+SCHEMA_VERSION <- "1.1"
 CMH_STEPS <- list(cart_given_view = c("cart", "view"), purchase_given_checkout = c("purchase", "checkout"))
 
 track_version <- function() {
@@ -118,6 +118,8 @@ build_answers <- function(clean, checks, export, contract) {
     order_value = value,
     weekly = weekly(f),
     opportunity = opp,
-    decision = decision(channel, opp, contract)
+    decision = decision(channel, opp, contract),
+    monitoring = monitoring(f, clean, export, contract), # v1.1
+    payment_methods = payment_methods(clean)
   )
 }

@@ -6,7 +6,7 @@ ISSUE_ORDER <- c(
   "sessions_orphan_user", "sessions_unknown_channel", "users_missing_signup_channel", "users_city_variants_merged",
   "events_unknown_name", "events_orphan_session", "events_repeated_steps", "sessions_out_of_order",
   "orders_exact_duplicates", "orders_unparseable_amount", "orders_non_positive_amount", "orders_orphan_session",
-  "orders_without_checkout"
+  "orders_without_checkout", "sessions_excluded_week" # v1.1
 )
 
 normalise_label <- function(x) tolower(stringr::str_trim(x))
@@ -81,9 +81,13 @@ clean_sessions <- function(raw, users, export, contract, issues) {
   issues$sessions_orphan_user <- sum(orphan)
   s <- s[!orphan, ]
 
-  issues$sessions_unknown_channel <- sum(s$channel == "unknown")
   s$week <- format(s$started_at, "%G-W%V")
   s$month <- format(s$started_at, "%Y-%m")
+  # v1.1: weeks with known-broken tracking are not analysed (contract cleaning.exclude_weeks)
+  excluded <- s$week %in% unlist(contract$cleaning$exclude_weeks)
+  issues$sessions_excluded_week <- sum(excluded)
+  s <- s[!excluded, ]
+  issues$sessions_unknown_channel <- sum(s$channel == "unknown") # v1.1: of the analysed sessions
   list(sessions = dplyr::arrange(s, .data$session_id), issues = issues)
 }
 

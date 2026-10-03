@@ -33,7 +33,8 @@ test_that("rows removed plus rows kept equals rows read", {
   expect_equal(dq$raw_rows$events - i$events_unknown_name - i$events_orphan_session - i$events_repeated_steps,
                dq$clean_rows$events)
   expect_equal(dq$raw_rows$users, dq$clean_rows$users)
-  removed <- i$sessions_bad_timestamp + i$sessions_exact_duplicates + i$sessions_out_of_period + i$sessions_orphan_user
+  removed <- i$sessions_bad_timestamp + i$sessions_exact_duplicates + i$sessions_out_of_period +
+    i$sessions_orphan_user + i$sessions_excluded_week
   expect_gte(dq$raw_rows$sessions - removed - dq$clean_rows$sessions, 2 * i$sessions_conflicting_ids)
 })
 

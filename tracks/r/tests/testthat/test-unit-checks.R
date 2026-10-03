@@ -23,7 +23,7 @@ test_that("ratio checks report the observed ratio", {
 
 test_that("a new channel value fails the accepted values check", {
   t <- tiny()
-  t$clean$sessions$channel[1] <- "referral"
+  t$clean$sessions$channel[1] <- "affiliate"
   expect_identical(statuses(run_checks(t$clean, t$export, CONTRACT))[["sessions.channel.accepted"]], list("fail", 1L))
 })
 

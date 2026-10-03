@@ -1,7 +1,7 @@
 # R track (tidyverse + base R stats + R Markdown). Same targets in every track:
 # install, lint, test, coverage, run (+ report).
 R ?= Rscript
-DATA ?= ../../data/raw/2026-06
+DATA ?= ../../data/raw/2026-08
 OUT ?= out
 
 .PHONY: install lint test coverage run report clean

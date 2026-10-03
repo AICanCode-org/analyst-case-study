@@ -14,6 +14,8 @@ REPO <- Sys.getenv("FUNNELLENS_REPO", normalizePath(file.path(track_root(), ".."
 CONTRACT_DIR <- file.path(REPO, "contract")
 TINY <- file.path(CONTRACT_DIR, "fixtures", "tiny")
 EXPORT_V10 <- file.path(REPO, "data", "raw", "2026-06")
+EXPORT_V11 <- file.path(REPO, "data", "raw", "2026-08")
+CONTRACT_V10 <- file.path(CONTRACT_DIR, "history", "data-contract-1.0.0.yaml")
 EXPECTED <- jsonlite::read_json(file.path(CONTRACT_DIR, "fixtures", "tiny-expected.json"))
 STATS_CASES <- jsonlite::read_json(file.path(CONTRACT_DIR, "fixtures", "stats-cases.json"))
 Z <- 1.959963984540054
@@ -55,4 +57,27 @@ with_checks <- function(checks) {
   contract <- CONTRACT
   contract$checks <- checks
   contract
+}
+
+BACKCOMPAT_IGNORE <- c("$/schema_version", "$/dataset/contract_version")
+
+#' The same comparison as scripts/parity.py: numbers to 1e-9 relative, everything else exactly.
+#' subset = TRUE (v1.1 against a v1.0 golden): fields only in `b` are allowed, version fields skipped.
+json_diff <- function(a, b, path = "$", subset = FALSE) {
+  if (subset && path %in% BACKCOMPAT_IGNORE) return(NULL)
+  if (is.list(a) && is.list(b)) {
+    if (is.null(names(a))) {
+      if (length(a) != length(b)) return(path)
+      keys <- seq_along(a)
+    } else {
+      keys <- setdiff(names(a), "generator")
+      extra <- setdiff(names(b), c(names(a), "generator"))
+      if (!all(keys %in% names(b)) || (!subset && length(extra) > 0)) return(path)
+    }
+    return(unlist(lapply(keys, function(k) json_diff(a[[k]], b[[k]], paste0(path, "/", k), subset))))
+  }
+  if (is.numeric(a) && is.numeric(b)) {
+    if (abs(a - b) <= max(1e-12, 1e-9 * abs(a))) return(NULL) else return(path)
+  }
+  if (identical(a, b)) NULL else path
 }

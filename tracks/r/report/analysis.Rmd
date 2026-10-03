@@ -6,7 +6,7 @@ output:
     toc: true
     self_contained: true
 params:
-  data: "../../../data/raw/2026-06"
+  data: "../../../data/raw/2026-08"
 ---
 
 ```{r setup, include = FALSE}
@@ -112,6 +112,32 @@ o <- a$opportunity
 
 If mobile paid like desktop within each channel: ₹`r sprintf("%.1f", o$monthly_revenue_uplift_inr / 1e5)` lakh per
 month (`r pct(o$uplift_share_of_mobile_revenue)` of mobile revenue).
+
+## v1.1 · Monitoring and payment methods
+
+```{r monitoring}
+m <- a$monitoring
+mw <- do.call(rbind, lapply(m$weeks, function(r) {
+  data.frame(week = r$week, rate = if (is.na(r$mobile_checkout_given_cart)) NA else r$mobile_checkout_given_cart)
+}))
+ggplot(mw, aes(week, rate, group = 1)) +
+  geom_line(colour = palette[["mobile"]]) +
+  geom_hline(yintercept = m$medians$mobile_checkout_given_cart, linetype = "dashed") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  labs(title = "Mobile checkout given cart per full ISO week (dashed: median)", y = NULL)
+```
+
+Freshness: last session `r m$freshness$last_session_date`, `r m$freshness$days_behind` day(s) behind the period
+end (stale: `r m$freshness$stale`). Excluded weeks: `r if (length(m$excluded_weeks)) paste(m$excluded_weeks, collapse = ", ") else "none"`
+(`r a$data_quality$issues$sessions_excluded_week` sessions; see `docs/postmortem-2026-W31.md`).
+Anomalies beyond ±`r pct(m$max_relative_deviation, 0)` of the median week: `r length(m$anomalies)`.
+
+```{r payment-methods, eval = !is.null(a$payment_methods)}
+pm <- a$payment_methods$by_device
+knitr::kable(data.frame(method = names(pm$mobile), mobile = unlist(pm$mobile),
+                        desktop = unlist(pm$desktop[names(pm$mobile)]), row.names = NULL),
+             caption = "Clean orders by payment method")
+```
 
 ## Q8 · Recommendation
 

@@ -5,7 +5,7 @@ CHANNELS <- list(
        desktop = list(view = 100, cart = 40, checkout = 20, purchase = 15)),
   list(channel = "organic", mobile = list(view = 50, cart = 10, checkout = 5, purchase = 4),
        desktop = list(view = 80, cart = 30, checkout = 10, purchase = 6)),
-  list(channel = "referral", mobile = list(view = 9, cart = 3, checkout = 2, purchase = 1),
+  list(channel = "affiliate", mobile = list(view = 9, cart = 3, checkout = 2, purchase = 1),
        desktop = list(view = 0, cart = 0, checkout = 0, purchase = 0))
 )
 EXPORT <- list(name = "2026-03", period_start = as.Date("2026-01-01"), period_end = as.Date("2026-02-28"),

@@ -3,7 +3,7 @@ skip_if_pending("test-data-contract-violations.R")
 
 test_that("a new channel value stops the run", {
   data <- export_copy(EXPORT_V10)
-  append_line(file.path(data, "sessions.csv"), "S999999,1,mobile,referral,2026-06-30 10:00:00")
+  append_line(file.path(data, "sessions.csv"), "S999999,1,mobile,affiliate,2026-06-30 10:00:00")
   expect_error(analyse(data), "sessions.channel.accepted \\(1 rows\\)", class = "contract_error")
 })
 

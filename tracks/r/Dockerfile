@@ -18,4 +18,4 @@ COPY --from=src /app /app
 WORKDIR /app/tracks/r
 USER 10001
 ENTRYPOINT ["Rscript", "run.R"]
-CMD ["run", "--data", "/app/data/raw/2026-06", "--out", "/out"]
+CMD ["run", "--data", "/app/data/raw/2026-08", "--out", "/out"]
