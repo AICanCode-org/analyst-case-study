@@ -92,3 +92,26 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
   `statsmodels.stats.contingency_tables.StratifiedTable(...).oddsratio_pooled_confint()`.
 * **Time saved / lost (honest guess):** saved ~30 minutes.
 * **What I learned:** the stats fixture is the only acceptable judge of a formula.
+
+### 2026-07-14 · Phase 4 · Invariants instead of more examples
+* **Tool / model:** Claude (chat)
+* **Prompt (summary or paste):**
+  > Prompt 2 of Phase 4: properties that must hold for any valid answers.json (column names and rules only).
+* **What it produced:** twelve invariants; three were wrong ("revenue share equals session share for
+  desktop", "every channel has a payment step gap", "p < 0.05 implies a large odds ratio").
+* **What I kept / changed / rejected, and why:** kept nine (funnel monotonic, shares sum to 1, the CI
+  contains the OR, clean ≤ raw, ...); rejected the three because they are claims about this data,
+  not truths about any data.
+* **How I verified it:** each kept invariant passes on 2026-06 and fails on a hand-broken copy of the answers.
+* **Time saved / lost (honest guess):** saved ~40 minutes.
+* **What I learned:** an invariant must hold for every valid input; findings are not invariants.
+### 2026-07-15 · Phase 4 · Parity found a spec ambiguity, not a bug
+* **Tool / model:** none at first; then Gemini to compare two readings of the spec.
+* **Prompt (summary or paste):**
+  > Here are steps 7 and 9 of the cleaning spec and two counts of unknown-channel sessions (3,361 vs 3,478). Which reading does the text support?
+* **What it produced:** "both are defensible; the text does not order the count and the exclusion."
+* **What I kept / changed / rejected, and why:** kept the diagnosis; did not let either track "win".
+  Proposed one sentence for `questions.md` (count after the exclusion) and changed the track that differed.
+* **How I verified it:** parity IDENTICAL for the three tracks and the golden file after the change.
+* **Time saved / lost (honest guess):** neutral; the value was finding it before a stakeholder did.
+* **What I learned:** two independent implementations are the best review a spec can get.

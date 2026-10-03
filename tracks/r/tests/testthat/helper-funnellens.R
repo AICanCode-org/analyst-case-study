@@ -3,11 +3,7 @@
 # When you start a milestone, delete its line here, watch the tests fail (red),
 # implement until they pass (green). See docs/phase-3.
 # ---------------------------------------------------------------------------
-PENDING <- c(
-  "test-data-golden.R" = "Phase 4 - golden answers on the real export",
-  "test-data-invariants.R" = "Phase 4 - invariants on the real export",
-  "test-data-contract-violations.R" = "Phase 4 - contract violations stop the run"
-)
+PENDING <- c()
 
 skip_if_pending <- function(file) {
   if (file %in% names(PENDING)) skip(sprintf("PENDING (%s) - see tests/testthat/helper-funnellens.R", PENDING[[file]]))
