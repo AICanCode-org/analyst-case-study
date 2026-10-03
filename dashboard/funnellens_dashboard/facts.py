@@ -97,8 +97,32 @@ def build_facts(a: dict) -> list[Fact]:
 
 
 def extra_facts(a: dict) -> list[tuple[str, tuple]]:
-    """Facts from optional answer sections (none in schema 1.0)."""
-    return []
+    """Facts from optional answer sections: none in schema 1.0; monitoring and payment methods in 1.1."""
+    out = []
+    m = a.get("monitoring")
+    if m:
+        excluded = m["excluded_weeks"]
+        n_excluded = a["data_quality"]["issues"].get("sessions_excluded_week", 0)
+        limit = round(100 * m["max_relative_deviation"])
+        text = (
+            f"Monitoring checked {len(m['weeks'])} full weeks: {len(m['anomalies'])} deviate from the median week "
+            f"by more than {limit}%."
+        )
+        if excluded:
+            text += f" Excluded for broken tracking: {', '.join(excluded)} ({n_excluded:,} sessions)."
+        out.append((text, (len(m["weeks"]), len(m["anomalies"]), limit, n_excluded)))
+    pm = a.get("payment_methods")
+    if pm:
+        mobile = pm["by_device"]["mobile"]
+        total = sum(mobile.values())
+        top = max(sorted(mobile), key=mobile.get)
+        out.append(
+            (
+                f"The most used mobile payment method is {top} ({pct(mobile[top] / total)} of mobile orders).",
+                (100 * mobile[top] / total,),
+            )
+        )
+    return out
 
 
 def facts_block(facts: list[Fact]) -> str:

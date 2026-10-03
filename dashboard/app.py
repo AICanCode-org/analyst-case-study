@@ -1,4 +1,4 @@
-"""FunnelLens v1.0 dashboard. Run: streamlit run app.py (after `make prepare`).
+"""FunnelLens v1.1 dashboard. Run: streamlit run app.py (after `make prepare`).
 
 Reads static/answers.json (any track's output, validated by `prepare`) and static/narrative.json.
 Everything shown is an aggregate from answers.json; there is no raw data in this app.
@@ -64,7 +64,9 @@ def main() -> None:
             if narrative["fallback"]:
                 st.caption(f"The AI narrator was not used: {narrative['reason']}. Showing the deterministic template.")
 
-    tabs = st.tabs(["Funnel", "Payment step", "Channels", "Order value", "Weekly", "Data quality"])
+    monitoring = answers.get("monitoring")  # v1.1 answers; 1.0 answers have no monitoring tab
+    names = ["Funnel", "Payment step", "Channels", "Order value", "Weekly", "Data quality"]
+    tabs = st.tabs(names + (["Monitoring"] if monitoring else []))
     with tabs[0]:
         rates = pd.DataFrame({d: f["by_device"][d]["step_rates"] for d in DEVICES})
         st.bar_chart(rates, stack=False)
@@ -98,6 +100,25 @@ def main() -> None:
             pd.DataFrame(dq["checks"])[["id", "severity", "status", "failing_rows", "observed"]], hide_index=True
         )
         st.dataframe(pd.Series(dq["issues"], name="rows"))
+    if monitoring:
+        with tabs[6]:
+            fresh = monitoring["freshness"]
+            excluded = ", ".join(monitoring["excluded_weeks"]) or "none"
+            st.write(
+                f"Last session {fresh['last_session_date']} · {fresh['days_behind']} day(s) behind the period end"
+                f" · {'STALE' if fresh['stale'] else 'fresh'} · excluded weeks: {excluded}"
+            )
+            weeks = pd.DataFrame(monitoring["weeks"]).set_index("week")
+            st.line_chart(weeks["mobile_checkout_given_cart"])
+            st.bar_chart(weeks["sessions"])
+            if monitoring["anomalies"]:
+                st.warning(f"{len(monitoring['anomalies'])} anomalous week(s): compare trends with care.")
+                st.dataframe(pd.DataFrame(monitoring["anomalies"]), hide_index=True)
+            else:
+                limit = monitoring["max_relative_deviation"]
+                st.success(f"No full week deviates from the median week by more than {limit:.0%}.")
+            if answers.get("payment_methods"):
+                st.dataframe(pd.DataFrame(answers["payment_methods"]["by_device"]).fillna(0).astype(int))
     st.download_button(
         "Download the decision memo (Markdown)",
         (STATIC / "onepager.md").read_bytes() if (STATIC / "onepager.md").is_file() else b"",

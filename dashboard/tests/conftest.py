@@ -6,12 +6,18 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-GOLDEN = REPO / "contract" / "golden" / "answers-2026-06.json"
+GOLDEN = REPO / "contract" / "golden" / "answers-2026-06.json"  # schema 1.0 (frozen)
+GOLDEN_V11 = REPO / "contract" / "golden" / "answers-2026-08.json"
 
 
 @pytest.fixture
 def answers():
     return json.loads(GOLDEN.read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def answers_v11():
+    return json.loads(GOLDEN_V11.read_text(encoding="utf-8"))
 
 
 @pytest.fixture

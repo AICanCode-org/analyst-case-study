@@ -35,19 +35,19 @@ services:
     <<: *pipeline
     build: { context: ., dockerfile: tracks/python/Dockerfile }
     image: funnellens-python:local
-    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-06}", "--out", "/out/python"]
+    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-08}", "--out", "/out/python"]
 
   sql:
     <<: *pipeline
     build: { context: ., dockerfile: tracks/sql/Dockerfile }
     image: funnellens-sql:local
-    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-06}", "--out", "/out/sql"]
+    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-08}", "--out", "/out/sql"]
 
   r:
     <<: *pipeline
     build: { context: ., dockerfile: tracks/r/Dockerfile }
     image: funnellens-r:local
-    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-06}", "--out", "/out/r"]
+    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-08}", "--out", "/out/r"]
 
   parity:
     profiles: ["pipelines"]

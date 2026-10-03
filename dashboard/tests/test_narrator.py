@@ -132,3 +132,10 @@ def test_settings_from_env_never_expose_the_key():
 )
 def test_numbers_must_be_a_correct_rounding(token, values, ok):
     assert allowed(token, values) is ok
+
+
+def test_the_template_passes_its_guardrails_on_v1_1_answers(answers_v11):
+    facts = build_facts(answers_v11)
+    text = template_text(facts)
+    assert validate(text, facts, answers_v11["decision"]["recommendation"]) is None
+    assert "₹14.3 lakh" in text

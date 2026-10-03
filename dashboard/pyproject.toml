@@ -1,6 +1,6 @@
 [project]
 name = "funnellens-dashboard"
-version = "1.0.0"
+version = "1.1.0"
 description = "FunnelLens analysis, dashboard and AI narrator"
 requires-python = ">=3.11"
 

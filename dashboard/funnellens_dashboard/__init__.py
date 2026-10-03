@@ -1,3 +1,3 @@
-"""FunnelLens dashboard: the v1.0 release app (Streamlit) and the optional AI insight narrator."""
+"""FunnelLens dashboard: the v1.1 release app (Streamlit) and the optional AI insight narrator."""
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"

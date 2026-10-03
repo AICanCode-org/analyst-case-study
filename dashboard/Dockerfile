@@ -1,9 +1,9 @@
-# FunnelLens dashboard (the v1.0 release). Build from the repo root:
+# FunnelLens dashboard (the v1.1 release). Build from the repo root:
 #   docker build -f dashboard/Dockerfile -t funnellens-dashboard:local .
 # Stage 1 runs the Python track pipeline on the committed export, so the image ships with answers.json;
 # set ANSWERS_PATH at run time to show another track's answers instead (docker compose --profile pipelines).
 FROM python:3.12-slim AS answers
-ARG EXPORT=2026-06
+ARG EXPORT=2026-08
 ENV PYTHONDONTWRITEBYTECODE=1 PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1
 RUN --mount=type=bind,source=tracks/python/requirements.txt,target=/tmp/requirements.txt \
     pip install -r /tmp/requirements.txt
