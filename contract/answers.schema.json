@@ -4,44 +4,157 @@
   "title": "FunnelLens answers.json",
   "description": "What every track writes (contract/questions.md). Readers must ignore unknown fields: new versions only add fields.",
   "type": "object",
-  "required": ["schema", "schema_version", "generator", "dataset", "data_quality", "funnel", "payment_step_test",
-               "by_channel", "order_value", "weekly", "opportunity", "decision"],
+  "required": [
+    "schema",
+    "schema_version",
+    "generator",
+    "dataset",
+    "data_quality",
+    "funnel",
+    "payment_step_test",
+    "by_channel",
+    "order_value",
+    "weekly",
+    "opportunity",
+    "decision"
+  ],
   "properties": {
-    "schema": {"const": "funnellens-answers"},
-    "schema_version": {"type": "string", "pattern": "^1\\.\\d+$"},
-    "generator": {"type": "object", "required": ["track", "version"],
-                  "properties": {"track": {"enum": ["python", "sql", "r"]}, "version": {"type": "string"}}},
+    "schema": {
+      "const": "funnellens-answers"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.\\d+$"
+    },
+    "generator": {
+      "type": "object",
+      "required": [
+        "track",
+        "version"
+      ],
+      "properties": {
+        "track": {
+          "enum": [
+            "python",
+            "sql",
+            "r"
+          ]
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
     "dataset": {
       "type": "object",
-      "required": ["export", "period_start", "period_end", "months", "sample_rate", "contract_version"],
+      "required": [
+        "export",
+        "period_start",
+        "period_end",
+        "months",
+        "sample_rate",
+        "contract_version"
+      ],
       "properties": {
-        "export": {"type": "string", "pattern": "^\\d{4}-\\d{2}$"},
-        "period_start": {"type": "string", "format": "date"},
-        "period_end": {"type": "string", "format": "date"},
-        "months": {"type": "integer", "minimum": 1},
-        "sample_rate": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
-        "contract_version": {"type": "string"}
+        "export": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}$"
+        },
+        "period_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "months": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sample_rate": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "contract_version": {
+          "type": "string"
+        }
       }
     },
     "data_quality": {
       "type": "object",
-      "required": ["raw_rows", "clean_rows", "issues", "checks"],
+      "required": [
+        "raw_rows",
+        "clean_rows",
+        "issues",
+        "checks"
+      ],
       "properties": {
-        "raw_rows": {"$ref": "#/$defs/tableCounts"},
-        "clean_rows": {"$ref": "#/$defs/tableCounts"},
-        "issues": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+        "raw_rows": {
+          "$ref": "#/$defs/tableCounts"
+        },
+        "clean_rows": {
+          "$ref": "#/$defs/tableCounts"
+        },
+        "issues": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
         "checks": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "type", "severity", "status", "failing_rows", "observed"],
+            "required": [
+              "id",
+              "type",
+              "severity",
+              "status",
+              "failing_rows",
+              "observed"
+            ],
             "properties": {
-              "id": {"type": "string"},
-              "type": {"enum": ["row_count_min", "unique", "not_null", "accepted_values", "range", "in_period", "relationship", "max_ratio"]},
-              "severity": {"enum": ["error", "warn"]},
-              "status": {"enum": ["pass", "warn", "fail"]},
-              "failing_rows": {"type": "integer", "minimum": 0},
-              "observed": {"type": ["number", "null"]}
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "row_count_min",
+                  "unique",
+                  "not_null",
+                  "accepted_values",
+                  "range",
+                  "in_period",
+                  "relationship",
+                  "max_ratio"
+                ]
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warn"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "pass",
+                  "warn",
+                  "fail"
+                ]
+              },
+              "failing_rows": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "observed": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
             }
           }
         }
@@ -49,125 +162,618 @@
     },
     "funnel": {
       "type": "object",
-      "required": ["steps", "by_device", "mobile_share_of_sessions", "mobile_share_of_revenue"],
+      "required": [
+        "steps",
+        "by_device",
+        "mobile_share_of_sessions",
+        "mobile_share_of_revenue"
+      ],
       "properties": {
-        "steps": {"const": ["sessions", "view", "cart", "checkout", "purchase"]},
+        "steps": {
+          "const": [
+            "sessions",
+            "view",
+            "cart",
+            "checkout",
+            "purchase"
+          ]
+        },
         "by_device": {
           "type": "object",
-          "required": ["all", "desktop", "mobile"],
-          "additionalProperties": {"$ref": "#/$defs/deviceFunnel"}
+          "required": [
+            "all",
+            "desktop",
+            "mobile"
+          ],
+          "additionalProperties": {
+            "$ref": "#/$defs/deviceFunnel"
+          }
         },
-        "mobile_share_of_sessions": {"$ref": "#/$defs/share"},
-        "mobile_share_of_revenue": {"$ref": "#/$defs/share"}
+        "mobile_share_of_sessions": {
+          "$ref": "#/$defs/share"
+        },
+        "mobile_share_of_revenue": {
+          "$ref": "#/$defs/share"
+        }
       }
     },
     "payment_step_test": {
       "type": "object",
-      "required": ["metric", "mobile", "desktop", "difference", "ci95", "z", "p_value"],
+      "required": [
+        "metric",
+        "mobile",
+        "desktop",
+        "difference",
+        "ci95",
+        "z",
+        "p_value"
+      ],
       "properties": {
-        "metric": {"const": "purchase_given_checkout"},
-        "mobile": {"$ref": "#/$defs/proportion"},
-        "desktop": {"$ref": "#/$defs/proportion"},
-        "difference": {"type": "number"},
-        "ci95": {"$ref": "#/$defs/interval"},
-        "z": {"type": "number"},
-        "p_value": {"$ref": "#/$defs/share"}
+        "metric": {
+          "const": "purchase_given_checkout"
+        },
+        "mobile": {
+          "$ref": "#/$defs/proportion"
+        },
+        "desktop": {
+          "$ref": "#/$defs/proportion"
+        },
+        "difference": {
+          "type": "number"
+        },
+        "ci95": {
+          "$ref": "#/$defs/interval"
+        },
+        "z": {
+          "type": "number"
+        },
+        "p_value": {
+          "$ref": "#/$defs/share"
+        }
       }
     },
     "by_channel": {
       "type": "object",
-      "required": ["channels", "cmh", "simpson"],
+      "required": [
+        "channels",
+        "cmh",
+        "simpson"
+      ],
       "properties": {
         "channels": {
           "type": "array",
-          "items": {"type": "object", "required": ["channel", "desktop", "mobile"],
-                    "properties": {"channel": {"type": "string"}, "desktop": {"$ref": "#/$defs/counts"}, "mobile": {"$ref": "#/$defs/counts"}}}
+          "items": {
+            "type": "object",
+            "required": [
+              "channel",
+              "desktop",
+              "mobile"
+            ],
+            "properties": {
+              "channel": {
+                "type": "string"
+              },
+              "desktop": {
+                "$ref": "#/$defs/counts"
+              },
+              "mobile": {
+                "$ref": "#/$defs/counts"
+              }
+            }
+          }
         },
         "cmh": {
           "type": "object",
-          "required": ["cart_given_view", "purchase_given_checkout"],
+          "required": [
+            "cart_given_view",
+            "purchase_given_checkout"
+          ],
           "additionalProperties": {
             "type": "object",
-            "required": ["statistic", "p_value", "odds_ratio_mh", "ci95", "crude_odds_ratio", "strata"],
+            "required": [
+              "statistic",
+              "p_value",
+              "odds_ratio_mh",
+              "ci95",
+              "crude_odds_ratio",
+              "strata"
+            ],
             "properties": {
-              "statistic": {"type": "number", "minimum": 0}, "p_value": {"$ref": "#/$defs/share"},
-              "odds_ratio_mh": {"type": "number", "exclusiveMinimum": 0}, "ci95": {"$ref": "#/$defs/interval"},
-              "crude_odds_ratio": {"type": "number"}, "strata": {"type": "integer", "minimum": 1}
+              "statistic": {
+                "type": "number",
+                "minimum": 0
+              },
+              "p_value": {
+                "$ref": "#/$defs/share"
+              },
+              "odds_ratio_mh": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "ci95": {
+                "$ref": "#/$defs/interval"
+              },
+              "crude_odds_ratio": {
+                "type": "number"
+              },
+              "strata": {
+                "type": "integer",
+                "minimum": 1
+              }
             }
           }
         },
         "simpson": {
           "type": "object",
-          "required": ["step", "aggregate_gap", "within_channel_gaps", "reversal"],
-          "properties": {"aggregate_gap": {"type": "number"}, "within_channel_gaps": {"type": "object", "additionalProperties": {"type": "number"}},
-                         "reversal": {"type": "boolean"}}
+          "required": [
+            "step",
+            "aggregate_gap",
+            "within_channel_gaps",
+            "reversal"
+          ],
+          "properties": {
+            "aggregate_gap": {
+              "type": "number"
+            },
+            "within_channel_gaps": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "reversal": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
     "order_value": {
       "type": "object",
-      "required": ["mobile", "desktop", "difference_inr", "welch_t", "df", "p_value", "ci95"],
+      "required": [
+        "mobile",
+        "desktop",
+        "difference_inr",
+        "welch_t",
+        "df",
+        "p_value",
+        "ci95"
+      ],
       "properties": {
-        "mobile": {"$ref": "#/$defs/valueSummary"}, "desktop": {"$ref": "#/$defs/valueSummary"},
-        "difference_inr": {"type": "number"}, "welch_t": {"type": "number"}, "df": {"type": "number", "exclusiveMinimum": 0},
-        "p_value": {"$ref": "#/$defs/share"}, "ci95": {"$ref": "#/$defs/interval"}
+        "mobile": {
+          "$ref": "#/$defs/valueSummary"
+        },
+        "desktop": {
+          "$ref": "#/$defs/valueSummary"
+        },
+        "difference_inr": {
+          "type": "number"
+        },
+        "welch_t": {
+          "type": "number"
+        },
+        "df": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "p_value": {
+          "$ref": "#/$defs/share"
+        },
+        "ci95": {
+          "$ref": "#/$defs/interval"
+        }
       }
     },
     "weekly": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["week", "sessions", "purchases", "conversion"],
+        "required": [
+          "week",
+          "sessions",
+          "purchases",
+          "conversion"
+        ],
         "properties": {
-          "week": {"type": "string", "pattern": "^\\d{4}-W\\d{2}$"},
-          "sessions": {"$ref": "#/$defs/perDeviceInt"},
-          "purchases": {"$ref": "#/$defs/perDeviceInt"},
-          "conversion": {"type": "object", "required": ["desktop", "mobile"],
-                         "additionalProperties": {"type": ["number", "null"], "minimum": 0, "maximum": 1}}
+          "week": {
+            "type": "string",
+            "pattern": "^\\d{4}-W\\d{2}$"
+          },
+          "sessions": {
+            "$ref": "#/$defs/perDeviceInt"
+          },
+          "purchases": {
+            "$ref": "#/$defs/perDeviceInt"
+          },
+          "conversion": {
+            "type": "object",
+            "required": [
+              "desktop",
+              "mobile"
+            ],
+            "additionalProperties": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
         }
       }
     },
     "opportunity": {
       "type": "object",
-      "required": ["by_channel", "extra_orders_in_sample", "months", "sample_rate", "extra_orders_per_month", "mobile_aov_inr",
-                   "monthly_revenue_uplift_inr", "mobile_monthly_revenue_inr", "uplift_share_of_mobile_revenue"],
+      "required": [
+        "by_channel",
+        "extra_orders_in_sample",
+        "months",
+        "sample_rate",
+        "extra_orders_per_month",
+        "mobile_aov_inr",
+        "monthly_revenue_uplift_inr",
+        "mobile_monthly_revenue_inr",
+        "uplift_share_of_mobile_revenue"
+      ],
       "properties": {
-        "by_channel": {"type": "array", "items": {"type": "object", "required": ["channel", "gap", "extra_orders"]}},
-        "monthly_revenue_uplift_inr": {"type": "number", "minimum": 0}
+        "by_channel": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "channel",
+              "gap",
+              "extra_orders"
+            ]
+          }
+        },
+        "monthly_revenue_uplift_inr": {
+          "type": "number",
+          "minimum": 0
+        }
       }
     },
     "decision": {
       "type": "object",
-      "required": ["recommendation", "reasons", "thresholds"],
+      "required": [
+        "recommendation",
+        "reasons",
+        "thresholds"
+      ],
       "properties": {
-        "recommendation": {"enum": ["no_checkout_gap_found", "rebuild_checkout", "run_targeted_experiment"]},
-        "reasons": {"type": "array", "minItems": 1, "items": {"enum": [
-          "adjusted_payment_gap_not_significant", "adjusted_payment_gap_significant", "uplift_above_rebuild_threshold",
-          "uplift_below_rebuild_threshold", "aggregate_cart_gap_is_channel_mix"]}},
-        "thresholds": {"type": "object", "required": ["alpha", "rebuild_min_monthly_uplift_inr"]}
+        "recommendation": {
+          "enum": [
+            "no_checkout_gap_found",
+            "rebuild_checkout",
+            "run_targeted_experiment"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "adjusted_payment_gap_not_significant",
+              "adjusted_payment_gap_significant",
+              "uplift_above_rebuild_threshold",
+              "uplift_below_rebuild_threshold",
+              "aggregate_cart_gap_is_channel_mix"
+            ]
+          }
+        },
+        "thresholds": {
+          "type": "object",
+          "required": [
+            "alpha",
+            "rebuild_min_monthly_uplift_inr"
+          ]
+        }
       }
+    },
+    "monitoring": {
+      "description": "v1.1 (questions.md §6): data-quality monitoring; absent in schema 1.0 answers",
+      "type": "object",
+      "required": [
+        "freshness",
+        "excluded_weeks",
+        "max_relative_deviation",
+        "weeks",
+        "medians",
+        "anomalies"
+      ],
+      "properties": {
+        "freshness": {
+          "type": "object",
+          "required": [
+            "period_end",
+            "last_session_date",
+            "days_behind",
+            "stale"
+          ],
+          "properties": {
+            "period_end": {
+              "type": "string",
+              "format": "date"
+            },
+            "last_session_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "days_behind": {
+              "type": "integer"
+            },
+            "stale": {
+              "type": "boolean"
+            }
+          }
+        },
+        "excluded_weeks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-W\\d{2}$"
+          }
+        },
+        "max_relative_deviation": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "weeks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "week",
+              "sessions",
+              "mobile_checkout_given_cart"
+            ],
+            "properties": {
+              "week": {
+                "type": "string",
+                "pattern": "^\\d{4}-W\\d{2}$"
+              },
+              "sessions": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "mobile_checkout_given_cart": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "medians": {
+          "type": "object",
+          "required": [
+            "sessions",
+            "mobile_checkout_given_cart"
+          ],
+          "properties": {
+            "sessions": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "mobile_checkout_given_cart": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "anomalies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "week",
+              "metric",
+              "value",
+              "median",
+              "deviation"
+            ],
+            "properties": {
+              "week": {
+                "type": "string"
+              },
+              "metric": {
+                "enum": [
+                  "sessions",
+                  "mobile_checkout_given_cart"
+                ]
+              },
+              "value": {
+                "type": "number"
+              },
+              "median": {
+                "type": "number"
+              },
+              "deviation": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "payment_methods": {
+      "description": "v1.1: clean orders per payment method and device; null when the export has no payment_method column",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "by_device"
+          ],
+          "properties": {
+            "by_device": {
+              "type": "object",
+              "required": [
+                "desktop",
+                "mobile"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "desktop": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "mobile": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "$defs": {
-    "share": {"type": "number", "minimum": 0, "maximum": 1},
-    "interval": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
-    "tableCounts": {"type": "object", "required": ["users", "sessions", "events", "orders"],
-                    "additionalProperties": {"type": "integer", "minimum": 0}},
-    "perDeviceInt": {"type": "object", "required": ["desktop", "mobile"], "additionalProperties": {"type": "integer", "minimum": 0}},
-    "counts": {"type": "object", "required": ["sessions", "view", "cart", "checkout", "purchase"],
-               "additionalProperties": {"type": "integer", "minimum": 0}},
-    "proportion": {"type": "object", "required": ["n", "successes", "rate"],
-                   "properties": {"n": {"type": "integer"}, "successes": {"type": "integer"}, "rate": {"$ref": "#/$defs/share"}}},
-    "valueSummary": {"type": "object", "required": ["orders", "mean_inr", "sd_inr"],
-                     "properties": {"orders": {"type": "integer", "minimum": 0}, "mean_inr": {"type": "number"}, "sd_inr": {"type": "number"}}},
+    "share": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "interval": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "tableCounts": {
+      "type": "object",
+      "required": [
+        "users",
+        "sessions",
+        "events",
+        "orders"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "perDeviceInt": {
+      "type": "object",
+      "required": [
+        "desktop",
+        "mobile"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "sessions",
+        "view",
+        "cart",
+        "checkout",
+        "purchase"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "proportion": {
+      "type": "object",
+      "required": [
+        "n",
+        "successes",
+        "rate"
+      ],
+      "properties": {
+        "n": {
+          "type": "integer"
+        },
+        "successes": {
+          "type": "integer"
+        },
+        "rate": {
+          "$ref": "#/$defs/share"
+        }
+      }
+    },
+    "valueSummary": {
+      "type": "object",
+      "required": [
+        "orders",
+        "mean_inr",
+        "sd_inr"
+      ],
+      "properties": {
+        "orders": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mean_inr": {
+          "type": "number"
+        },
+        "sd_inr": {
+          "type": "number"
+        }
+      }
+    },
     "deviceFunnel": {
       "type": "object",
-      "required": ["sessions", "view", "cart", "checkout", "purchase", "revenue_paise", "conversion", "step_rates"],
+      "required": [
+        "sessions",
+        "view",
+        "cart",
+        "checkout",
+        "purchase",
+        "revenue_paise",
+        "conversion",
+        "step_rates"
+      ],
       "properties": {
-        "revenue_paise": {"type": "integer", "minimum": 0},
-        "conversion": {"type": ["number", "null"]},
-        "step_rates": {"type": "object", "required": ["view", "cart", "checkout", "purchase"],
-                       "additionalProperties": {"type": ["number", "null"], "minimum": 0, "maximum": 1}}
+        "revenue_paise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conversion": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "step_rates": {
+          "type": "object",
+          "required": [
+            "view",
+            "cart",
+            "checkout",
+            "purchase"
+          ],
+          "additionalProperties": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
       }
     }
   }

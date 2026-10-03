@@ -12,6 +12,7 @@ python3 scripts/generate_data.py --check   # every committed file is byte-identi
 | Export | Period | Sample | Notes |
 |---|---|---|---|
 | `2026-06` | 2026-01-01 to 2026-06-30 | 1 in 20 sessions | the export of the brief (v1.0) |
+| `2026-08` | 2026-01-01 to 2026-08-31 | 1 in 20 sessions | the refresh (v1.1): new channel `referral`, a `payment_method` column, and the broken tracking week 2026-W31 (see `docs/postmortem-2026-W31.md`) |
 
 ## `users.csv`
 | Column | Type (after cleaning) | Notes |
@@ -27,7 +28,7 @@ python3 scripts/generate_data.py --check   # every committed file is byte-identi
 | `session_id` | text `S000001` | exact duplicate rows, and a few ids that appear with different content |
 | `user_id` | integer | a few point to no user |
 | `device` | `desktop` / `mobile` | mixed case |
-| `channel` | `email` / `organic` / `paid_social` / unknown | `""`, `(not set)` and `unknown` all mean unknown |
+| `channel` | `email` / `organic` / `paid_social` / `referral` (from July 2026) / unknown | `""`, `(not set)` and `unknown` all mean unknown |
 | `started_at` | timestamp | `2026-01-05 14:03:00` **or** `05/01/2026 14:03` (day first); a few are unparseable or outside the period |
 
 ## `events.csv`
@@ -43,5 +44,7 @@ python3 scripts/generate_data.py --check   # every committed file is byte-identi
 | `order_id` | text `O000001` | a few exact duplicates |
 | `session_id` | text | the session the order was placed in; a few point to no session; a few have no checkout event |
 | `amount` | text → integer paise | `₹1,299.00`, `1299`, `Rs. 1,299`, refunds as `-₹499.00`, a few unparseable |
+
+| `payment_method` | `upi` / `card` / `cod` / `netbanking` / empty | **2026-08 and later only** (an additive column: older exports do not have it) |
 
 A purchase is a session with an order (`contract/questions.md` §3); there is no purchase event.

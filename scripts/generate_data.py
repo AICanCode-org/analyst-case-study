@@ -31,6 +31,7 @@ WORLD_START, WORLD_END = date(2026, 1, 1), date(2026, 8, 31)
 SAMPLE_RATE = 0.05
 EXPORTS = {  # export name -> (period end, extra columns/features present in that export)
     "2026-06": {"period_end": date(2026, 6, 30), "payment_method": False},
+    "2026-08": {"period_end": date(2026, 8, 31), "payment_method": True},  # v1.1 refresh
 }
 CITIES = ["pune", "mumbai", "delhi", "bengaluru", "hyderabad", "chennai", "kolkata", "ahmedabad", "jaipur", "lucknow"]
 CITY_W = [14, 18, 16, 15, 10, 8, 6, 5, 4, 4]

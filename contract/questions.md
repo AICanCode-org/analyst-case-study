@@ -43,8 +43,12 @@ surrounding whitespace, then lower-case.
    (`sessions_out_of_period`).
 6. Drop sessions whose `user_id` is not a clean user (`sessions_orphan_user`).
 7. Count clean sessions with channel `unknown` (`sessions_unknown_channel`; they are kept).
+   *(v1.1)* Count them **after** step 9, so the count and its ratio check describe the analysed sessions.
 8. Derive `week` = ISO 8601 week of the start date as `YYYY-Www` (e.g. 1 Jan 2026 → `2026-W01`) and
    `month` = `YYYY-MM`.
+9. *(v1.1)* Drop sessions whose `week` is in `cleaning.exclude_weeks` (`sessions_excluded_week`).
+   Their events and orders then fail the orphan rules below and are counted there. This count is the
+   **last** key of `issues` (after `orders_without_checkout`).
 
 **events**: normalise `event_name`; drop names not in `cleaning.steps` (`events_unknown_name`);
 then drop events whose session is not a clean session (`events_orphan_session`). Keep one row per
@@ -117,7 +121,31 @@ mobile_aov_inr; `mobile_monthly_revenue_inr` = mobile revenue_paise / 100 / mont
 4. Then append `aggregate_cart_gap_is_channel_mix` if the aggregate cart gap is negative and the
    cart-step CMH is not significant **or** its OR ≥ 1 (mobile carts at least as well within channels).
 
-## 6. Numbers and JSON
+## 6. v1.1: monitoring and payment methods
+
+**`monitoring`** (data quality over time; it reports, it never stops the run):
+- `freshness`: `period_end`; `last_session_date` = date of the latest clean session;
+  `days_behind` = period_end − last_session_date (days); `stale` = days_behind > `monitoring.max_days_behind`.
+- `excluded_weeks` = `cleaning.exclude_weeks` (as listed in the contract).
+- `weeks`: every **full** ISO week of the period (its Monday ≥ period_start and its Sunday ≤ period_end)
+  that has a clean session, in week order, with `sessions` (all devices) and
+  `mobile_checkout_given_cart` = mobile sessions with funnel checkout / mobile sessions with funnel cart
+  (null if no mobile cart).
+- `medians`: the median of each metric over `weeks` (nulls ignored; an even count takes the mean of the
+  two middle values).
+- `anomalies`: for each week (in order) and each metric (`sessions` first), deviation =
+  (value − median) / median; an anomaly when |deviation| > `monitoring.max_relative_deviation`:
+  `{week, metric, value, median, deviation}`.
+
+**`payment_methods`**: `null` when the raw orders have no `payment_method` column (exports before
+2026-08). Otherwise `{"by_device": {"desktop": {method: orders}, "mobile": {...}}}` over clean orders,
+method = normalised label (`""` → `unknown`), keys in name order.
+
+**Compatibility.** Schema 1.1 only adds fields. On the 2026-06 export a v1.1 pipeline reproduces every
+v1.0 field of `golden/answers-2026-06.json` (except `schema_version`, `generator` and
+`dataset.contract_version`), and a v1.0 dashboard reads v1.1 answers (the schema allows extra fields).
+
+## 7. Numbers and JSON
 
 Counts are integers. Rates, statistics and money are unrounded doubles; round only when you display
 them. A rate with a zero denominator is `null`. Key order in `answers.json` does not matter; list

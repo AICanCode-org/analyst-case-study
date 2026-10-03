@@ -3,7 +3,7 @@
 # The cleaning rules and every formula are in contract/questions.md; the output shape in
 # contract/answers.schema.json. Change this file with a pull request and bump `version` (SemVer).
 contract: funnellens
-version: "1.0.0"
+version: "1.1.0"   # 1.1.0: channel referral, exclude_weeks, monitoring (see CHANGELOG)
 
 raw:  # columns each raw CSV must have (extra columns are allowed and ignored: additive changes are compatible)
   users: [user_id, signup_date, signup_channel, city]
@@ -13,10 +13,14 @@ raw:  # columns each raw CSV must have (extra columns are allowed and ignored: a
 
 cleaning:
   devices: [desktop, mobile]
-  channels: [email, organic, paid_social, unknown]
+  channels: [email, organic, paid_social, referral, unknown]   # referral: new programme from July 2026
   unknown_channel_values: ["", "(not set)", "unknown"]
   steps: [view, cart, checkout]
   city_aliases: {bangalore: bengaluru, bombay: mumbai}
+  # ISO weeks whose tracking is known to be broken; their sessions (and so their events and orders) are
+  # dropped before any metric. 2026-W31: app release 8.14 lost ~70 % of mobile checkout events
+  # (incident FL-2026-08, docs/postmortem-2026-W31.md). Remove a week only with a post-mortem.
+  exclude_weeks: ["2026-W31"]
 
 # Checks run on the clean tables (and on issue counts), in this order. A failing `error` check stops
 # the pipeline (exit code 3) before any answer is written; a failing `warn` check is reported.
@@ -37,6 +41,11 @@ checks:
   - {id: users.missing_signup_channel.ratio, type: max_ratio, issue: users_missing_signup_channel, of: raw.users, max: 0.10, severity: warn}
   - {id: orders.unparseable_amount.ratio, type: max_ratio, issue: orders_unparseable_amount, of: raw.orders, max: 0.005, severity: warn}
   - {id: orders.without_checkout.ratio, type: max_ratio, issue: orders_without_checkout, of: clean.orders, max: 0.02, severity: warn}
+
+# Data-quality monitoring (questions.md §6), reported in answers.monitoring; it never stops the run.
+monitoring:
+  max_relative_deviation: 0.30   # a full ISO week whose value is more than 30 % away from the median is flagged
+  max_days_behind: 2             # the last clean session must be at most 2 days before period_end
 
 analysis:
   alpha: 0.05

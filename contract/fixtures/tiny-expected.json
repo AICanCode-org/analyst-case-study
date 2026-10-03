@@ -29,7 +29,8 @@
     "orders_unparseable_amount": 1,
     "orders_non_positive_amount": 2,
     "orders_orphan_session": 1,
-    "orders_without_checkout": 1
+    "orders_without_checkout": 1,
+    "sessions_excluded_week": 0
   },
   "clean_session_ids": [
     "S1",
