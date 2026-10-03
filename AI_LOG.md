@@ -128,3 +128,17 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
   produced a cache miss as expected.
 * **Time saved / lost (honest guess):** saved ~10 minutes per CI run.
 * **What I learned:** a cache key must change exactly when its content should.
+
+### 2026-07-21 · Phase 6 · Breaking the narrator's guardrails
+* **Tool / model:** Ollama llama3.2 (local) and ChatGPT (free tier)
+* **Prompt (summary or paste):**
+  > Prompt 1 of Phase 6: five summaries that each violate one rule, and one misleading but valid one.
+* **What it produced:** the five violations, and a valid summary that led with the ₹16.3 lakh figure
+  and buried the caveat in the last clause.
+* **What I kept / changed / rejected, and why:** all five were rejected by `validate()` for the right
+  reason; one ("about 70 %" for 69.2 %) was rejected as an invented number, which is the intended
+  strictness. The misleading-but-valid one passes: recorded as a known limitation and added "a human
+  reads the memo before it is sent" to the runbook.
+* **How I verified it:** a test per case in `tests/test_narrator.py` with the fake LLM server.
+* **Time saved / lost (honest guess):** saved ~1 hour of inventing adversarial cases.
+* **What I learned:** guardrails check facts and words, not emphasis; review stays human.

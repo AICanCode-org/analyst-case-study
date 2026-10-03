@@ -1,4 +1,5 @@
-# Full CI (Phase 5). Runs only the tracks whose files changed (plus everything when shared files
+# Full CI (Phase 6: Phase 5 + a Docker job that builds every image, runs the three pipelines in
+# containers with the parity check, and smoke-tests the dashboard, also with the AI provider down). Runs only the tracks whose files changed (plus everything when shared files
 # change), each through the reusable workflow, then checks that every track's answers.json is
 # identical to the golden answers. "ci-ok" is the single check to mark as *required* in branch
 # protection.  Every concept is explained in docs/github-actions-explained.md.
@@ -147,10 +148,44 @@ jobs:
       - run: make lint
       - run: make coverage
 
+  docker:
+    name: Docker · images, pipelines + parity in containers, dashboard smoke test
+    needs: changes
+    if: needs.changes.outputs.shared == 'true' || needs.changes.outputs.python == 'true' || needs.changes.outputs.sql == 'true' || needs.changes.outputs.r == 'true' || needs.changes.outputs.dashboard == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build every image (dashboard + the three pipelines)
+        run: docker compose --profile pipelines build
+      - name: Run each track's pipeline in its container (non-root, read-only file system)
+        run: |
+          for track in python sql r; do docker compose --profile pipelines run --rm "$track"; done
+      - name: Parity of the three containers' answers.json
+        run: docker compose --profile pipelines run --rm --no-deps parity
+      - name: Start the dashboard and wait until its health check passes
+        run: docker compose up -d --no-build --wait --wait-timeout 120 dashboard
+      - name: Smoke test
+        run: scripts/smoke-test.sh http://localhost:8501
+      - name: The AI provider is down → the narrator falls back to the template, the dashboard still works
+        env:
+          AI_PROVIDER: llm
+          LLM_BASE_URL: http://10.255.255.1:9/v1
+          LLM_TIMEOUT_MS: "1500"
+        run: |
+          docker compose up -d --no-build --wait --wait-timeout 120 --force-recreate dashboard
+          EXPECT_FALLBACK=true scripts/smoke-test.sh http://localhost:8501
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose --profile pipelines logs --no-color
+      - name: Tear down
+        if: always()
+        run: docker compose --profile pipelines down -v
+
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [changes, contract, python, sql, r, parity, dashboard]
+    needs: [changes, contract, python, sql, r, parity, dashboard, docker]
     runs-on: ubuntu-latest
     steps:
       - name: Fail if any needed job failed or was cancelled (skipped is fine)
