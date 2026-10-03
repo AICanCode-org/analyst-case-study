@@ -1,0 +1,11 @@
+[server]
+enableStaticServing = true
+headless = true
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "viewer"
+showErrorDetails = false

@@ -1,0 +1,14 @@
+# these files are templates filled by the runner (identifiers come only from the contract)
+[sqlfluff]
+templater = python
+
+[sqlfluff:templater:python:context]
+table = users
+column = user_id
+values = cfg_devices
+to_table = sessions
+to_column = session_id
+min = 1.0
+max = 2.0
+issue = sessions_exact_duplicates
+of_table = raw_sessions

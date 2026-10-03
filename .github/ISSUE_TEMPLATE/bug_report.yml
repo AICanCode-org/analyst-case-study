@@ -1,0 +1,29 @@
+name: Bug or wrong number
+description: Something crashes, or a number in answers.json / the dashboard looks wrong
+labels: [bug]
+body:
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      options: [Python, SQL, R, Dashboard, Shared / contract]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: For a wrong number, quote the JSON path (e.g. `$.by_channel.cmh.purchase_given_checkout.p_value`) and the questions.md section.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      placeholder: "make run DATA=../../data/raw/2026-06 → ..."
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / tag / commit

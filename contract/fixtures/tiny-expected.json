@@ -1,0 +1,245 @@
+{
+  "_comment": "Hand-checked expectations for contract/fixtures/tiny (see contract/fixtures/README.md for the row-by-row reasoning).",
+  "raw_rows": {
+    "users": 4,
+    "sessions": 14,
+    "events": 22,
+    "orders": 10
+  },
+  "clean_rows": {
+    "users": 4,
+    "sessions": 8,
+    "events": 19,
+    "orders": 5
+  },
+  "issues": {
+    "sessions_bad_timestamp": 1,
+    "sessions_exact_duplicates": 1,
+    "sessions_conflicting_ids": 1,
+    "sessions_out_of_period": 1,
+    "sessions_orphan_user": 1,
+    "sessions_unknown_channel": 2,
+    "users_missing_signup_channel": 1,
+    "users_city_variants_merged": 2,
+    "events_unknown_name": 1,
+    "events_orphan_session": 1,
+    "events_repeated_steps": 1,
+    "sessions_out_of_order": 1,
+    "orders_exact_duplicates": 1,
+    "orders_unparseable_amount": 1,
+    "orders_non_positive_amount": 2,
+    "orders_orphan_session": 1,
+    "orders_without_checkout": 1
+  },
+  "clean_session_ids": [
+    "S1",
+    "S11",
+    "S12",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
+  ],
+  "clean_order_paise": {
+    "O1": 129900,
+    "O2": 150000,
+    "O3": 200000,
+    "O6": 250050,
+    "O7": 80000
+  },
+  "checks": {
+    "sessions.row_count": [
+      "fail",
+      1
+    ],
+    "users.user_id.unique": [
+      "pass",
+      0
+    ],
+    "sessions.session_id.unique": [
+      "pass",
+      0
+    ],
+    "sessions.device.accepted": [
+      "pass",
+      0
+    ],
+    "sessions.channel.accepted": [
+      "pass",
+      0
+    ],
+    "sessions.started_at.in_period": [
+      "pass",
+      0
+    ],
+    "events.event_name.accepted": [
+      "pass",
+      0
+    ],
+    "events.session_id.relationship": [
+      "pass",
+      0
+    ],
+    "orders.order_id.unique": [
+      "pass",
+      0
+    ],
+    "orders.amount_paise.range": [
+      "pass",
+      0
+    ],
+    "orders.session_id.relationship": [
+      "pass",
+      0
+    ],
+    "sessions.duplicate_rows.ratio": [
+      "warn",
+      1
+    ],
+    "sessions.unknown_channel.ratio": [
+      "warn",
+      2
+    ],
+    "users.missing_signup_channel.ratio": [
+      "warn",
+      1
+    ],
+    "orders.unparseable_amount.ratio": [
+      "warn",
+      1
+    ],
+    "orders.without_checkout.ratio": [
+      "warn",
+      1
+    ]
+  },
+  "funnel": {
+    "all": {
+      "sessions": 8,
+      "view": 7,
+      "cart": 6,
+      "checkout": 5,
+      "purchase": 4,
+      "revenue_paise": 809950
+    },
+    "desktop": {
+      "sessions": 4,
+      "view": 4,
+      "cart": 3,
+      "checkout": 3,
+      "purchase": 3,
+      "revenue_paise": 600050
+    },
+    "mobile": {
+      "sessions": 4,
+      "view": 3,
+      "cart": 3,
+      "checkout": 2,
+      "purchase": 1,
+      "revenue_paise": 209900
+    }
+  },
+  "weekly": [
+    {
+      "week": "2026-W10",
+      "sessions": {
+        "desktop": 3,
+        "mobile": 2
+      },
+      "purchases": {
+        "desktop": 2,
+        "mobile": 1
+      },
+      "conversion": {
+        "desktop": 0.6666666666666666,
+        "mobile": 0.5
+      }
+    },
+    {
+      "week": "2026-W11",
+      "sessions": {
+        "desktop": 1,
+        "mobile": 2
+      },
+      "purchases": {
+        "desktop": 1,
+        "mobile": 0
+      },
+      "conversion": {
+        "desktop": 1.0,
+        "mobile": 0.0
+      }
+    }
+  ],
+  "channels": [
+    {
+      "channel": "email",
+      "desktop": {
+        "sessions": 1,
+        "view": 1,
+        "cart": 1,
+        "checkout": 1,
+        "purchase": 1
+      },
+      "mobile": {
+        "sessions": 0,
+        "view": 0,
+        "cart": 0,
+        "checkout": 0,
+        "purchase": 0
+      }
+    },
+    {
+      "channel": "organic",
+      "desktop": {
+        "sessions": 1,
+        "view": 1,
+        "cart": 0,
+        "checkout": 0,
+        "purchase": 0
+      },
+      "mobile": {
+        "sessions": 1,
+        "view": 0,
+        "cart": 0,
+        "checkout": 0,
+        "purchase": 0
+      }
+    },
+    {
+      "channel": "paid_social",
+      "desktop": {
+        "sessions": 1,
+        "view": 1,
+        "cart": 1,
+        "checkout": 1,
+        "purchase": 1
+      },
+      "mobile": {
+        "sessions": 2,
+        "view": 2,
+        "cart": 2,
+        "checkout": 1,
+        "purchase": 1
+      }
+    },
+    {
+      "channel": "unknown",
+      "desktop": {
+        "sessions": 1,
+        "view": 1,
+        "cart": 1,
+        "checkout": 1,
+        "purchase": 1
+      },
+      "mobile": {
+        "sessions": 1,
+        "view": 1,
+        "cart": 1,
+        "checkout": 1,
+        "purchase": 0
+      }
+    }
+  ]
+}

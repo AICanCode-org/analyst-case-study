@@ -1,0 +1,43 @@
+{
+  "cms_file": "analyst-case-study",
+  "slug": "analyst-case-study",
+  "title": "FunnelLens: Data Analyst Case Study on a Messy E-commerce Funnel",
+  "tagline": "Take one messy e-commerce export from raw CSVs to a tested, reproducible recommendation the Head of Product can act on, with a data contract, statistics that adjust for confounders, CI, a dashboard and an AI narrator that cannot invent numbers",
+  "description": "Mobile is about 69 % of FunnelLens's sessions but only about 61 % of its revenue, and the Head of Product wants a quarter of engineering time to rebuild the mobile checkout. Over nine phases you find out what the data supports, like a professional analytics team: turn the request into answerable questions with acceptance criteria, write a data contract and an analysis plan with ADRs, then build the analysis test-first in your track: load four deliberately messy CSVs as text, apply documented cleaning rules that count every row they drop, check the contract, build the funnel by device, channel and week, and test the hypothesis three ways (a two-proportion z test, a Cochran-Mantel-Haenszel test that adjusts for acquisition channel and exposes a Simpson's paradox, and Welch's t test on order values) before sizing the opportunity against the rebuild threshold. Golden answers, invariants and contract-violation tests pin every number, and the Python, SQL and R tracks must agree to 1e-9. CI executes the notebook or R Markdown report and checks parity; a Streamlit dashboard with an optional AI narrator (numbered facts in, guardrails out, a deterministic template as fallback) ships in Docker. Then a data refresh breaks the pipeline on purpose: a new acquisition channel and a broken tracking week lead to a contract version bump, monitoring, a post-mortem and v1.1. Pick Python (pandas, Jupyter), SQL (DuckDB) or R (tidyverse, R Markdown); the data, contract, golden answers and dashboard are shared. Everything runs on a laptop with no paid service and no API key.",
+  "difficulty": "intermediate",
+  "tech_stack": ["pandas", "DuckDB", "tidyverse", "Jupyter", "R Markdown", "Streamlit", "Docker", "GitHub Actions"],
+  "tracks": [
+    {"id": "python", "label": "Python", "tech_stack": ["Python 3.11+", "pandas", "Jupyter", "SciPy", "statsmodels", "pytest"], "folder": "tracks/python"},
+    {"id": "sql", "label": "SQL", "tech_stack": ["DuckDB SQL", "sqlfluff", "Python runner", "pytest"], "folder": "tracks/sql"},
+    {"id": "r", "label": "R", "tech_stack": ["R 4.3+", "tidyverse", "R Markdown", "testthat", "covr", "lintr"], "folder": "tracks/r"}
+  ],
+  "prerequisites": [
+    {"title": "Git and the command line basics", "url": null},
+    {"title": "One of: Python with pandas, SQL (SELECT, GROUP BY, JOIN, window functions) or R with dplyr", "url": null},
+    {"title": "Descriptive statistics: proportions, means, confidence intervals, p-values", "url": null}
+  ],
+  "outcomes": [
+    "Turn a stakeholder's solution (\"rebuild the mobile checkout\") into answerable questions, decision thresholds and acceptance criteria",
+    "Write a data contract (schema, accepted values, checks with severities) and an analysis plan with ADRs before touching the data",
+    "Load messy exports defensively and clean them with documented rules that count every row they change, without silently multiplying revenue in a join",
+    "Build a conversion funnel by device, channel and week and spot a Simpson's paradox before it misleads a decision",
+    "Test a hypothesis three ways (two-proportion z, Cochran-Mantel-Haenszel adjusted for a confounder, Welch's t) and size the opportunity against a business threshold",
+    "Pin an analysis with golden answers, invariants and contract-violation tests, and make three implementations agree to 1e-9",
+    "Make a notebook or R Markdown report reproducible from a clean checkout, and execute it in CI with GitHub Actions",
+    "Ship a Streamlit dashboard in Docker with an AI narrator that only sees aggregates, is checked by guardrails and falls back to a deterministic template",
+    "Handle a breaking data refresh: version the contract, add monitoring, exclude a broken week on purpose and write a blameless post-mortem",
+    "Use AI assistants deliberately and verify every number they produce"
+  ],
+  "ai_feature": "An optional AI insight narrator on the dashboard: it receives only numbered aggregate facts from answers.json (never rows or ids) and writes a short summary for the Head of Product. Guardrails reject any answer with an unknown citation, a number that is not a correct rounding of a fact, an unlisted date, causal language or a missing caveat, and the dashboard then shows a deterministic template instead. Offline by default; any OpenAI-compatible endpoint (a local Ollama, or a free Gemini/Groq key) can be plugged in",
+  "requires_paid_services": false,
+  "access": {"default": "pro", "plans": ["pro", "elite", "campus"], "free_phases": [0]},
+  "repo": {
+    "url": "https://github.com/AICanCode-org/analyst-case-study",
+    "starter_ref": "main",
+    "solution_ref": "solution",
+    "phase_tags": ["phase-0-end", "phase-1-end", "phase-2-end", "phase-3-end", "phase-4-end", "phase-5-end", "phase-6-end", "phase-7-end", "phase-8-end"],
+    "releases": ["v1.0.0", "v1.1.0"]
+  },
+  "live_demo_url": null,
+  "portfolio_blurb": "Built FunnelLens, an end-to-end data analyst case study on a deliberately messy e-commerce export (sessions, events, orders, users): a versioned data contract with severity-graded checks, documented cleaning rules that count every dropped row, a funnel by device, channel and week, and three hypothesis tests (two-proportion z, Cochran-Mantel-Haenszel adjusted for acquisition channel, which exposed a Simpson's paradox, and Welch's t). The evidence did not support the proposed mobile checkout rebuild (adjusted payment odds ratio 0.71, 95 % CI 0.62 to 0.81, but an uplift of about ₹16 lakh a month against a ₹25 lakh threshold), so I recommended a targeted experiment. Golden answers, invariants and contract-violation tests; Python, SQL and R implementations that agree to 1e-9; a reproducible notebook/R Markdown report executed in GitHub Actions CI; a Streamlit dashboard in Docker with a guard-railed AI narrator; and, after a data refresh broke the pipeline, a contract version bump, weekly monitoring and a blameless post-mortem (v1.1)."
+}

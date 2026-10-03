@@ -1,0 +1,835 @@
+{
+  "schema": "funnellens-answers",
+  "schema_version": "1.0",
+  "generator": {
+    "track": "python",
+    "version": "1.0.0"
+  },
+  "dataset": {
+    "export": "2026-06",
+    "period_start": "2026-01-01",
+    "period_end": "2026-06-30",
+    "months": 6,
+    "sample_rate": 0.05,
+    "contract_version": "1.0.0"
+  },
+  "data_quality": {
+    "raw_rows": {
+      "users": 5986,
+      "sessions": 27515,
+      "events": 40031,
+      "orders": 2522
+    },
+    "clean_rows": {
+      "users": 5986,
+      "sessions": 26895,
+      "events": 37893,
+      "orders": 2451
+    },
+    "issues": {
+      "sessions_bad_timestamp": 80,
+      "sessions_exact_duplicates": 351,
+      "sessions_conflicting_ids": 6,
+      "sessions_out_of_period": 31,
+      "sessions_orphan_user": 146,
+      "sessions_unknown_channel": 2511,
+      "users_missing_signup_channel": 514,
+      "users_city_variants_merged": 36,
+      "events_unknown_name": 120,
+      "events_orphan_session": 389,
+      "events_repeated_steps": 1629,
+      "sessions_out_of_order": 153,
+      "orders_exact_duplicates": 8,
+      "orders_unparseable_amount": 10,
+      "orders_non_positive_amount": 29,
+      "orders_orphan_session": 24,
+      "orders_without_checkout": 39
+    },
+    "checks": [
+      {
+        "id": "sessions.row_count",
+        "type": "row_count_min",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "users.user_id.unique",
+        "type": "unique",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "sessions.session_id.unique",
+        "type": "unique",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "sessions.device.accepted",
+        "type": "accepted_values",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "sessions.channel.accepted",
+        "type": "accepted_values",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "sessions.started_at.in_period",
+        "type": "in_period",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "events.event_name.accepted",
+        "type": "accepted_values",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "events.session_id.relationship",
+        "type": "relationship",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "orders.order_id.unique",
+        "type": "unique",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "orders.amount_paise.range",
+        "type": "range",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "orders.session_id.relationship",
+        "type": "relationship",
+        "severity": "error",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": null
+      },
+      {
+        "id": "sessions.duplicate_rows.ratio",
+        "type": "max_ratio",
+        "severity": "warn",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": 0.012756678175540614
+      },
+      {
+        "id": "sessions.unknown_channel.ratio",
+        "type": "max_ratio",
+        "severity": "warn",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": 0.09336307863915226
+      },
+      {
+        "id": "users.missing_signup_channel.ratio",
+        "type": "max_ratio",
+        "severity": "warn",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": 0.08586702305379218
+      },
+      {
+        "id": "orders.unparseable_amount.ratio",
+        "type": "max_ratio",
+        "severity": "warn",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": 0.003965107057890563
+      },
+      {
+        "id": "orders.without_checkout.ratio",
+        "type": "max_ratio",
+        "severity": "warn",
+        "status": "pass",
+        "failing_rows": 0,
+        "observed": 0.01591187270501836
+      }
+    ]
+  },
+  "funnel": {
+    "steps": [
+      "sessions",
+      "view",
+      "cart",
+      "checkout",
+      "purchase"
+    ],
+    "by_device": {
+      "all": {
+        "sessions": 26895,
+        "view": 26102,
+        "cart": 7659,
+        "checkout": 4132,
+        "purchase": 2412,
+        "revenue_paise": 487098600,
+        "conversion": 0.08968209704406023,
+        "step_rates": {
+          "view": 0.9705149656069901,
+          "cart": 0.2934257911271167,
+          "checkout": 0.5394960177568873,
+          "purchase": 0.5837366892545982
+        }
+      },
+      "desktop": {
+        "sessions": 8275,
+        "view": 8047,
+        "cart": 2613,
+        "checkout": 1466,
+        "purchase": 961,
+        "revenue_paise": 191948800,
+        "conversion": 0.11613293051359516,
+        "step_rates": {
+          "view": 0.9724471299093655,
+          "cart": 0.3247172859450727,
+          "checkout": 0.5610409491006506,
+          "purchase": 0.655525238744884
+        }
+      },
+      "mobile": {
+        "sessions": 18620,
+        "view": 18055,
+        "cart": 5046,
+        "checkout": 2666,
+        "purchase": 1451,
+        "revenue_paise": 295149800,
+        "conversion": 0.07792696025778732,
+        "step_rates": {
+          "view": 0.969656283566058,
+          "cart": 0.2794793685959568,
+          "checkout": 0.5283392786365438,
+          "purchase": 0.5442610652663166
+        }
+      }
+    },
+    "mobile_share_of_sessions": 0.6923219929354899,
+    "mobile_share_of_revenue": 0.6059344042458755
+  },
+  "payment_step_test": {
+    "metric": "purchase_given_checkout",
+    "mobile": {
+      "n": 2666,
+      "successes": 1451,
+      "rate": 0.5442610652663166
+    },
+    "desktop": {
+      "n": 1466,
+      "successes": 961,
+      "rate": 0.655525238744884
+    },
+    "difference": -0.11126417347856743,
+    "ci95": [
+      -0.1420718705312895,
+      -0.08045647642584534
+    ],
+    "z": -6.941921288227328,
+    "p_value": 3.8680273082659e-12
+  },
+  "by_channel": {
+    "channels": [
+      {
+        "channel": "email",
+        "desktop": {
+          "sessions": 2447,
+          "view": 2385,
+          "cart": 973,
+          "checkout": 584,
+          "purchase": 389
+        },
+        "mobile": {
+          "sessions": 2768,
+          "view": 2685,
+          "cart": 1093,
+          "checkout": 657,
+          "purchase": 393
+        }
+      },
+      {
+        "channel": "organic",
+        "desktop": {
+          "sessions": 3860,
+          "view": 3753,
+          "cart": 1227,
+          "checkout": 690,
+          "purchase": 459
+        },
+        "mobile": {
+          "sessions": 5401,
+          "view": 5250,
+          "cart": 1869,
+          "checkout": 1051,
+          "purchase": 606
+        }
+      },
+      {
+        "channel": "paid_social",
+        "desktop": {
+          "sessions": 1173,
+          "view": 1144,
+          "cart": 198,
+          "checkout": 88,
+          "purchase": 51
+        },
+        "mobile": {
+          "sessions": 8735,
+          "view": 8464,
+          "cart": 1606,
+          "checkout": 720,
+          "purchase": 322
+        }
+      },
+      {
+        "channel": "unknown",
+        "desktop": {
+          "sessions": 795,
+          "view": 765,
+          "cart": 215,
+          "checkout": 104,
+          "purchase": 62
+        },
+        "mobile": {
+          "sessions": 1716,
+          "view": 1656,
+          "cart": 478,
+          "checkout": 238,
+          "purchase": 130
+        }
+      }
+    ],
+    "cmh": {
+      "cart_given_view": {
+        "statistic": 6.541639307495529,
+        "p_value": 0.010537820117489938,
+        "odds_ratio_mh": 1.0822447862021425,
+        "ci95": [
+          1.0186734069668737,
+          1.1497834038380952
+        ],
+        "crude_odds_ratio": 0.8066470629403524,
+        "strata": 4
+      },
+      "purchase_given_checkout": {
+        "statistic": 24.798632275433402,
+        "p_value": 6.364261191382781e-07,
+        "odds_ratio_mh": 0.7062373763000216,
+        "ci95": [
+          0.615733373545964,
+          0.8100441735206764
+        ],
+        "crude_odds_ratio": 0.6275655931107429,
+        "strata": 4
+      }
+    },
+    "simpson": {
+      "step": "cart_given_view",
+      "aggregate_gap": -0.04523791734911592,
+      "within_channel_gaps": {
+        "email": -0.0008901069299508957,
+        "organic": 0.029061550759392485,
+        "paid_social": 0.01666787843536427,
+        "unknown": 0.007601591361182158
+      },
+      "reversal": false
+    }
+  },
+  "order_value": {
+    "mobile": {
+      "orders": 1475,
+      "mean_inr": 2001.015593220339,
+      "sd_inr": 1342.3775912350586
+    },
+    "desktop": {
+      "orders": 976,
+      "mean_inr": 1966.688524590164,
+      "sd_inr": 1317.8056521087312
+    },
+    "difference_inr": 34.32706863017506,
+    "welch_t": 0.6266197516498881,
+    "df": 2114.229960636525,
+    "p_value": 0.530976169098728,
+    "ci95": [
+      -73.10388354879179,
+      141.7580208091419
+    ]
+  },
+  "weekly": [
+    {
+      "week": "2026-W01",
+      "sessions": {
+        "desktop": 190,
+        "mobile": 371
+      },
+      "purchases": {
+        "desktop": 18,
+        "mobile": 18
+      },
+      "conversion": {
+        "desktop": 0.09473684210526316,
+        "mobile": 0.04851752021563342
+      }
+    },
+    {
+      "week": "2026-W02",
+      "sessions": {
+        "desktop": 298,
+        "mobile": 593
+      },
+      "purchases": {
+        "desktop": 41,
+        "mobile": 51
+      },
+      "conversion": {
+        "desktop": 0.13758389261744966,
+        "mobile": 0.08600337268128162
+      }
+    },
+    {
+      "week": "2026-W03",
+      "sessions": {
+        "desktop": 305,
+        "mobile": 608
+      },
+      "purchases": {
+        "desktop": 38,
+        "mobile": 48
+      },
+      "conversion": {
+        "desktop": 0.12459016393442623,
+        "mobile": 0.07894736842105263
+      }
+    },
+    {
+      "week": "2026-W04",
+      "sessions": {
+        "desktop": 322,
+        "mobile": 630
+      },
+      "purchases": {
+        "desktop": 46,
+        "mobile": 46
+      },
+      "conversion": {
+        "desktop": 0.14285714285714285,
+        "mobile": 0.07301587301587302
+      }
+    },
+    {
+      "week": "2026-W05",
+      "sessions": {
+        "desktop": 330,
+        "mobile": 639
+      },
+      "purchases": {
+        "desktop": 47,
+        "mobile": 59
+      },
+      "conversion": {
+        "desktop": 0.14242424242424243,
+        "mobile": 0.09233176838810642
+      }
+    },
+    {
+      "week": "2026-W06",
+      "sessions": {
+        "desktop": 306,
+        "mobile": 649
+      },
+      "purchases": {
+        "desktop": 24,
+        "mobile": 52
+      },
+      "conversion": {
+        "desktop": 0.0784313725490196,
+        "mobile": 0.08012326656394453
+      }
+    },
+    {
+      "week": "2026-W07",
+      "sessions": {
+        "desktop": 297,
+        "mobile": 687
+      },
+      "purchases": {
+        "desktop": 41,
+        "mobile": 64
+      },
+      "conversion": {
+        "desktop": 0.13804713804713806,
+        "mobile": 0.09315866084425037
+      }
+    },
+    {
+      "week": "2026-W08",
+      "sessions": {
+        "desktop": 337,
+        "mobile": 666
+      },
+      "purchases": {
+        "desktop": 41,
+        "mobile": 66
+      },
+      "conversion": {
+        "desktop": 0.12166172106824925,
+        "mobile": 0.0990990990990991
+      }
+    },
+    {
+      "week": "2026-W09",
+      "sessions": {
+        "desktop": 353,
+        "mobile": 659
+      },
+      "purchases": {
+        "desktop": 45,
+        "mobile": 52
+      },
+      "conversion": {
+        "desktop": 0.1274787535410765,
+        "mobile": 0.07890743550834597
+      }
+    },
+    {
+      "week": "2026-W10",
+      "sessions": {
+        "desktop": 339,
+        "mobile": 691
+      },
+      "purchases": {
+        "desktop": 40,
+        "mobile": 46
+      },
+      "conversion": {
+        "desktop": 0.11799410029498525,
+        "mobile": 0.06657018813314038
+      }
+    },
+    {
+      "week": "2026-W11",
+      "sessions": {
+        "desktop": 319,
+        "mobile": 704
+      },
+      "purchases": {
+        "desktop": 35,
+        "mobile": 60
+      },
+      "conversion": {
+        "desktop": 0.109717868338558,
+        "mobile": 0.08522727272727272
+      }
+    },
+    {
+      "week": "2026-W12",
+      "sessions": {
+        "desktop": 316,
+        "mobile": 706
+      },
+      "purchases": {
+        "desktop": 26,
+        "mobile": 49
+      },
+      "conversion": {
+        "desktop": 0.08227848101265822,
+        "mobile": 0.06940509915014165
+      }
+    },
+    {
+      "week": "2026-W13",
+      "sessions": {
+        "desktop": 331,
+        "mobile": 713
+      },
+      "purchases": {
+        "desktop": 35,
+        "mobile": 45
+      },
+      "conversion": {
+        "desktop": 0.10574018126888217,
+        "mobile": 0.06311360448807854
+      }
+    },
+    {
+      "week": "2026-W14",
+      "sessions": {
+        "desktop": 312,
+        "mobile": 786
+      },
+      "purchases": {
+        "desktop": 38,
+        "mobile": 55
+      },
+      "conversion": {
+        "desktop": 0.12179487179487179,
+        "mobile": 0.06997455470737914
+      }
+    },
+    {
+      "week": "2026-W15",
+      "sessions": {
+        "desktop": 315,
+        "mobile": 689
+      },
+      "purchases": {
+        "desktop": 27,
+        "mobile": 51
+      },
+      "conversion": {
+        "desktop": 0.08571428571428572,
+        "mobile": 0.07402031930333818
+      }
+    },
+    {
+      "week": "2026-W16",
+      "sessions": {
+        "desktop": 338,
+        "mobile": 724
+      },
+      "purchases": {
+        "desktop": 44,
+        "mobile": 67
+      },
+      "conversion": {
+        "desktop": 0.1301775147928994,
+        "mobile": 0.0925414364640884
+      }
+    },
+    {
+      "week": "2026-W17",
+      "sessions": {
+        "desktop": 313,
+        "mobile": 750
+      },
+      "purchases": {
+        "desktop": 40,
+        "mobile": 51
+      },
+      "conversion": {
+        "desktop": 0.12779552715654952,
+        "mobile": 0.068
+      }
+    },
+    {
+      "week": "2026-W18",
+      "sessions": {
+        "desktop": 335,
+        "mobile": 770
+      },
+      "purchases": {
+        "desktop": 39,
+        "mobile": 64
+      },
+      "conversion": {
+        "desktop": 0.11641791044776119,
+        "mobile": 0.08311688311688312
+      }
+    },
+    {
+      "week": "2026-W19",
+      "sessions": {
+        "desktop": 291,
+        "mobile": 797
+      },
+      "purchases": {
+        "desktop": 37,
+        "mobile": 64
+      },
+      "conversion": {
+        "desktop": 0.12714776632302405,
+        "mobile": 0.08030112923462986
+      }
+    },
+    {
+      "week": "2026-W20",
+      "sessions": {
+        "desktop": 313,
+        "mobile": 803
+      },
+      "purchases": {
+        "desktop": 30,
+        "mobile": 55
+      },
+      "conversion": {
+        "desktop": 0.09584664536741214,
+        "mobile": 0.0684931506849315
+      }
+    },
+    {
+      "week": "2026-W21",
+      "sessions": {
+        "desktop": 327,
+        "mobile": 762
+      },
+      "purchases": {
+        "desktop": 46,
+        "mobile": 68
+      },
+      "conversion": {
+        "desktop": 0.14067278287461774,
+        "mobile": 0.08923884514435695
+      }
+    },
+    {
+      "week": "2026-W22",
+      "sessions": {
+        "desktop": 321,
+        "mobile": 777
+      },
+      "purchases": {
+        "desktop": 31,
+        "mobile": 50
+      },
+      "conversion": {
+        "desktop": 0.09657320872274143,
+        "mobile": 0.06435006435006435
+      }
+    },
+    {
+      "week": "2026-W23",
+      "sessions": {
+        "desktop": 319,
+        "mobile": 782
+      },
+      "purchases": {
+        "desktop": 29,
+        "mobile": 63
+      },
+      "conversion": {
+        "desktop": 0.09090909090909091,
+        "mobile": 0.08056265984654731
+      }
+    },
+    {
+      "week": "2026-W24",
+      "sessions": {
+        "desktop": 309,
+        "mobile": 813
+      },
+      "purchases": {
+        "desktop": 35,
+        "mobile": 69
+      },
+      "conversion": {
+        "desktop": 0.11326860841423948,
+        "mobile": 0.08487084870848709
+      }
+    },
+    {
+      "week": "2026-W25",
+      "sessions": {
+        "desktop": 313,
+        "mobile": 801
+      },
+      "purchases": {
+        "desktop": 44,
+        "mobile": 50
+      },
+      "conversion": {
+        "desktop": 0.14057507987220447,
+        "mobile": 0.062421972534332085
+      }
+    },
+    {
+      "week": "2026-W26",
+      "sessions": {
+        "desktop": 335,
+        "mobile": 822
+      },
+      "purchases": {
+        "desktop": 37,
+        "mobile": 70
+      },
+      "conversion": {
+        "desktop": 0.11044776119402985,
+        "mobile": 0.0851581508515815
+      }
+    },
+    {
+      "week": "2026-W27",
+      "sessions": {
+        "desktop": 91,
+        "mobile": 228
+      },
+      "purchases": {
+        "desktop": 7,
+        "mobile": 18
+      },
+      "conversion": {
+        "desktop": 0.07692307692307693,
+        "mobile": 0.07894736842105263
+      }
+    }
+  ],
+  "opportunity": {
+    "by_channel": [
+      {
+        "channel": "email",
+        "gap": 0.06792237442922378,
+        "extra_orders": 44.62500000000002
+      },
+      {
+        "channel": "organic",
+        "gap": 0.08862367103793489,
+        "extra_orders": 93.14347826086957
+      },
+      {
+        "channel": "paid_social",
+        "gap": 0.13232323232323234,
+        "extra_orders": 95.27272727272728
+      },
+      {
+        "channel": "unknown",
+        "gap": 0.049935358758888215,
+        "extra_orders": 11.884615384615396
+      }
+    ],
+    "extra_orders_in_sample": 244.92582091821225,
+    "months": 6,
+    "sample_rate": 0.05,
+    "extra_orders_per_month": 816.4194030607075,
+    "mobile_aov_inr": 2001.015593220339,
+    "monthly_revenue_uplift_inr": 1633667.9561321167,
+    "mobile_monthly_revenue_inr": 9838326.666666666,
+    "uplift_share_of_mobile_revenue": 0.1660514040123473
+  },
+  "decision": {
+    "recommendation": "run_targeted_experiment",
+    "reasons": [
+      "adjusted_payment_gap_significant",
+      "uplift_below_rebuild_threshold",
+      "aggregate_cart_gap_is_channel_mix"
+    ],
+    "thresholds": {
+      "alpha": 0.05,
+      "rebuild_min_monthly_uplift_inr": 2500000
+    }
+  }
+}

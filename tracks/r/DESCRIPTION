@@ -1,0 +1,25 @@
+Package: funnellens
+Title: FunnelLens Analysis, R Track
+Version: 1.0.0
+Authors@R: person("AiCanCode", "Maintainers", email = "maintainers@aicancode.org", role = c("aut", "cre"))
+Description: Cleans the FunnelLens e-commerce exports, checks the shared data contract and answers
+    the business questions of contract/questions.md with the tidyverse and base R statistics.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports:
+    dplyr,
+    rlang,
+    jsonlite,
+    readr,
+    stringr,
+    tibble,
+    tidyr,
+    yaml
+Suggests:
+    covr,
+    ggplot2,
+    knitr,
+    lintr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

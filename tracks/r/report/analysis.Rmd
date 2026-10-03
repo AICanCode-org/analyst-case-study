@@ -1,0 +1,88 @@
+---
+title: "FunnelLens: mobile checkout, or something else?"
+subtitle: "R track report"
+output:
+  html_document:
+    toc: true
+    self_contained: true
+params:
+  data: "../../../data/raw/2026-06"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 8, fig.height = 3.5)
+suppressPackageStartupMessages(pkgload::load_all("..", quiet = TRUE, export_all = FALSE))
+library(ggplot2)
+a <- analyse(params$data)
+pct <- function(x, digits = 1) sprintf(paste0("%.", digits, "f%%"), 100 * x)
+palette <- c(desktop = "#9aa5b1", mobile = "#d64545")
+```
+
+Every number below is computed by the `funnellens` R package from the raw export `r a$dataset$export`
+(`r a$dataset$period_start` to `r a$dataset$period_end`, a 1-in-`r round(1 / a$dataset$sample_rate)` sample).
+Knitting this file from a clean checkout reproduces it exactly; CI does that with `make report`.
+The formulas are in `contract/questions.md`.
+
+## Q1 · Can we trust the export?
+
+TODO: the evidence and the caveat.
+
+```{r q1-can-we-trust-the-export}
+# TODO (Phase 3)
+```
+
+## Q2 · The funnel by device
+
+TODO: the evidence and the caveat.
+
+```{r q2-the-funnel-by-device}
+# TODO (Phase 3)
+```
+
+## Q3 · Is the mobile payment step worse?
+
+TODO: the evidence and the caveat.
+
+```{r q3-is-the-mobile-payment-step-}
+# TODO (Phase 3)
+```
+
+## Q4 · Compare like with like: within each acquisition channel
+
+TODO: the evidence and the caveat.
+
+```{r q4-compare-like-with-like-with}
+# TODO (Phase 3)
+```
+
+## Q5 · Do mobile buyers spend less?
+
+TODO: the evidence and the caveat.
+
+```{r q5-do-mobile-buyers-spend-less}
+# TODO (Phase 3)
+```
+
+## Q6 · Is the weekly trend stable?
+
+TODO: the evidence and the caveat.
+
+```{r q6-is-the-weekly-trend-stable}
+# TODO (Phase 3)
+```
+
+## Q7 · What is the gap worth?
+
+TODO: the evidence and the caveat.
+
+```{r q7-what-is-the-gap-worth}
+# TODO (Phase 3)
+```
+
+## Q8 · Recommendation
+
+TODO: the evidence and the caveat.
+
+```{r q8-recommendation}
+# TODO (Phase 3)
+```

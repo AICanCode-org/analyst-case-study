@@ -1,0 +1,14 @@
+{
+  "export": "2026-06",
+  "period_start": "2026-01-01",
+  "period_end": "2026-06-30",
+  "sample_rate": 0.05,
+  "generator": "scripts/generate_data.py",
+  "seed": 20260701,
+  "files": {
+    "events.csv": "fe6a0f37cda277e4345916dc22263fac2489d1d4588be5641c71b8c389a0a1a2",
+    "orders.csv": "edabb6724abea86d9cc6bea17e4c8237555e2d1c178894916b48034e14a09f72",
+    "sessions.csv": "37accb00fd78deb4c1194d39286c641a9558834560f003c340633dc3f02d48b7",
+    "users.csv": "52286123ac93aed37d9600d2099ca3f5cc2f284e5a930af5703ed903c2a6165c"
+  }
+}

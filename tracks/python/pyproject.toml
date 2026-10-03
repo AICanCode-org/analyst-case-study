@@ -1,0 +1,26 @@
+[project]
+name = "funnellens"
+version = "1.0.0"
+description = "FunnelLens analysis, Python track"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["notebooks/.ipynb_checkpoints"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]   # the rupee sign and typographic characters are intended
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+source = ["funnellens"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

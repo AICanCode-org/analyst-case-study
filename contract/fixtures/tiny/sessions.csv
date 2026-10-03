@@ -1,0 +1,15 @@
+session_id,user_id,device,channel,started_at
+S1,1,mobile,paid_social,2026-03-02 10:00:00
+S2,1,Mobile,paid_social,02/03/2026 11:00
+S2,1,mobile, paid_social ,2026-03-02 11:00:00
+S3,2,desktop,,2026-03-03 09:30:00
+S4,2,desktop,organic,2026-03-04 12:00:00
+S5,3,DESKTOP,email,2026-03-05 08:15:00
+S6,3,mobile,(not set),2026-03-09 10:00:00
+S7,4,mobile,email,2026-02-30 10:00:00
+S8,4,mobile,email,2026-04-02 10:00:00
+S9,99,mobile,organic,2026-03-06 10:00:00
+S10,4,mobile,organic,2026-03-10 10:00:00
+S10,4,desktop,organic,2026-03-10 10:00:00
+S11,4,desktop,paid_social,10/03/2026 18:45
+S12,1,mobile,organic,2026-03-11 20:00:00
