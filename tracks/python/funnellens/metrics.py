@@ -12,36 +12,74 @@ DEVICES = ["desktop", "mobile"]
 
 def session_funnel(clean: Clean) -> pd.DataFrame:
     """One row per clean session with booleans view/cart/checkout/purchase (each implies the previous)."""
-    # TODO(M3) session_funnel: one row per clean session with view/cart/checkout/purchase flags; each step
-    # requires the previous one (a purchase needs a checkout). Spec: contract/questions.md §3; tests: metrics.
-    raise NotImplementedError("TODO(M3) session_funnel: see the comment above")
+    has = clean.events.assign(flag=True).pivot_table(
+        index="session_id", columns="event_name", values="flag", aggfunc="any", fill_value=False
+    )
+    s = clean.sessions[["session_id", "device", "channel", "week", "month"]].copy()
+    for step in ("view", "cart", "checkout"):
+        s[step] = s["session_id"].map(has.get(step, {})).fillna(False).astype(bool)
+    s["cart"] &= s["view"]
+    s["checkout"] &= s["cart"]
+    s["purchase"] = s["checkout"] & s["session_id"].isin(clean.orders["session_id"])
+    return s
 
 
 def counts(df: pd.DataFrame) -> dict:
-    # TODO(M3) counts: sessions and the four step counts of a group of sessions. Spec: contract/questions.md §3;
-    # tests: metrics.
-    raise NotImplementedError("TODO(M3) counts: see the comment above")
+    return {"sessions": len(df), **{step: int(df[step].sum()) for step in STEPS}}
 
 
 def rates(c: dict) -> dict:
-    # TODO(M3) rates: conversion = purchase / sessions; step rates are step / previous step; 0/0 is missing
-    # (null), never 0. Spec: contract/questions.md §3; tests: metrics.
-    raise NotImplementedError("TODO(M3) rates: see the comment above")
+    def ratio(a: int, b: int) -> float | None:
+        return a / b if b else None
+
+    return {
+        "conversion": ratio(c["purchase"], c["sessions"]),
+        "step_rates": {
+            "view": ratio(c["view"], c["sessions"]),
+            "cart": ratio(c["cart"], c["view"]),
+            "checkout": ratio(c["checkout"], c["cart"]),
+            "purchase": ratio(c["purchase"], c["checkout"]),
+        },
+    }
 
 
 def funnel_by_device(funnel: pd.DataFrame, clean: Clean) -> dict:
-    # TODO(M3) funnel_by_device: desktop, mobile and all, with revenue in paise; mobile shares of sessions and
-    # revenue. Spec: contract/questions.md §3; tests: metrics.
-    raise NotImplementedError("TODO(M3) funnel_by_device: see the comment above")
+    revenue = clean.orders.merge(clean.sessions[["session_id", "device"]], on="session_id")
+    out = {}
+    for device in ["all", *DEVICES]:
+        part = funnel if device == "all" else funnel[funnel["device"] == device]
+        c = counts(part)
+        paise = revenue["amount_paise"] if device == "all" else revenue.loc[revenue["device"] == device, "amount_paise"]
+        out[device] = {**c, "revenue_paise": int(paise.sum()), **rates(c)}
+    total = out["all"]
+    return {
+        "steps": ["sessions", *STEPS],
+        "by_device": out,
+        "mobile_share_of_sessions": out["mobile"]["sessions"] / total["sessions"],
+        "mobile_share_of_revenue": out["mobile"]["revenue_paise"] / total["revenue_paise"],
+    }
 
 
 def by_channel(funnel: pd.DataFrame) -> list[dict]:
-    # TODO(M3) by_channel: the funnel per acquisition channel and device, channels in contract order. Spec:
-    # contract/questions.md §3; tests: metrics.
-    raise NotImplementedError("TODO(M3) by_channel: see the comment above")
+    rows = []
+    for channel in sorted(funnel["channel"].unique()):
+        part = funnel[funnel["channel"] == channel]
+        rows.append({"channel": channel, **{d: counts(part[part["device"] == d]) for d in DEVICES}})
+    return rows
 
 
 def weekly(funnel: pd.DataFrame) -> list[dict]:
-    # TODO(M3) weekly: sessions, purchases and conversion per ISO week and device (week = ISO year + '-W' +
-    # 2-digit week). Spec: contract/questions.md §3; tests: metrics.
-    raise NotImplementedError("TODO(M3) weekly: see the comment above")
+    rows = []
+    for week in sorted(funnel["week"].unique()):
+        part = funnel[funnel["week"] == week]
+        sessions = {d: int((part["device"] == d).sum()) for d in DEVICES}
+        purchases = {d: int(part.loc[part["device"] == d, "purchase"].sum()) for d in DEVICES}
+        rows.append(
+            {
+                "week": week,
+                "sessions": sessions,
+                "purchases": purchases,
+                "conversion": {d: (purchases[d] / sessions[d] if sessions[d] else None) for d in DEVICES},
+            }
+        )
+    return rows
