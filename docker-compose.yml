@@ -1,0 +1,67 @@
+# FunnelLens local stack.
+#   docker compose up -d --build             the dashboard on http://localhost:8501 (answers baked from the Python track)
+#   docker compose --profile pipelines up    every track's pipeline on the same export, then the parity check
+# Optional AI narrator: AI_PROVIDER=llm LLM_BASE_URL=http://host.docker.internal:11434/v1 (see .env.example).
+name: funnellens
+
+x-pipeline: &pipeline
+  profiles: ["pipelines"]
+  volumes:
+    - ./data:/app/data:ro
+    - answers:/out
+  read_only: true
+  tmpfs: ["/tmp"]
+
+services:
+  dashboard:
+    build: { context: ., dockerfile: dashboard/Dockerfile }
+    image: funnellens-dashboard:local
+    ports:
+      - "${DASHBOARD_PORT:-8501}:8501"
+    environment:
+      AI_PROVIDER: ${AI_PROVIDER:-offline}
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+      LLM_MODEL: ${LLM_MODEL:-llama3.2}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-8000}
+      ANSWERS_PATH: ${ANSWERS_PATH:-/app/answers/answers.json}
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    volumes:
+      - answers:/answers:ro
+    read_only: true
+    tmpfs: ["/tmp", "/app/dashboard/static:uid=10001,gid=10001"]
+
+  python:
+    <<: *pipeline
+    build: { context: ., dockerfile: tracks/python/Dockerfile }
+    image: funnellens-python:local
+    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-06}", "--out", "/out/python"]
+
+  sql:
+    <<: *pipeline
+    build: { context: ., dockerfile: tracks/sql/Dockerfile }
+    image: funnellens-sql:local
+    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-06}", "--out", "/out/sql"]
+
+  r:
+    <<: *pipeline
+    build: { context: ., dockerfile: tracks/r/Dockerfile }
+    image: funnellens-r:local
+    command: ["run", "--data", "/app/data/raw/${EXPORT:-2026-06}", "--out", "/out/r"]
+
+  parity:
+    profiles: ["pipelines"]
+    image: funnellens-python:local
+    depends_on:
+      python: { condition: service_completed_successfully }
+      sql: { condition: service_completed_successfully }
+      r: { condition: service_completed_successfully }
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - answers:/out:ro
+    read_only: true
+    entrypoint: ["python", "/app/scripts/parity.py"]
+    command: ["/out/python/answers.json", "/out/sql/answers.json", "/out/r/answers.json"]
+
+volumes:
+  answers:

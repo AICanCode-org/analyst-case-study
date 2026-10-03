@@ -1,0 +1,16 @@
+**/.venv
+**/venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/out
+**/coverage.xml
+**/.coverage
+**/htmlcov
+**/node_modules
+**/*.html
+dashboard/static/*.json
+dashboard/static/*.md
+.git
+docs
+cms
