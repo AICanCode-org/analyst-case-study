@@ -1,7 +1,7 @@
 # SQL track (DuckDB). Same targets in every track: install, lint, test, coverage, run (+ report).
 # The analysis lives in sql/*.sql; funnellens_sql/ is only a thin runner (variables, checks, JSON).
 PY ?= .venv/bin/python
-DATA ?= ../../data/raw/2026-06
+DATA ?= ../../data/raw/2026-08
 OUT ?= out
 
 .PHONY: install lint test coverage run report clean

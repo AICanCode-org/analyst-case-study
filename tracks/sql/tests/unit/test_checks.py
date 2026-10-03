@@ -22,7 +22,7 @@ def test_ratio_checks_report_the_observed_ratio(tiny, contract):
 
 
 def test_a_new_channel_value_fails_the_accepted_values_check(tiny, contract):
-    tiny.execute("UPDATE sessions SET channel = 'referral' WHERE session_id = 'S1'")
+    tiny.execute("UPDATE sessions SET channel = 'affiliate' WHERE session_id = 'S1'")
     assert statuses(run_checks(tiny, contract))["sessions.channel.accepted"] == ["fail", 1]
 
 

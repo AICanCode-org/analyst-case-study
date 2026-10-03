@@ -53,6 +53,7 @@ def test_rows_removed_plus_rows_kept_equals_rows_read(a):
         + i["sessions_exact_duplicates"]
         + i["sessions_out_of_period"]
         + i["sessions_orphan_user"]
+        + i["sessions_excluded_week"]
     )
     assert raw["sessions"] - removed - clean["sessions"] >= 2 * i["sessions_conflicting_ids"]
 

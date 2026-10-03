@@ -15,4 +15,4 @@ COPY --from=src /app /app
 WORKDIR /app/tracks/sql
 USER 10001
 ENTRYPOINT ["python", "-m", "funnellens_sql"]
-CMD ["run", "--data", "/app/data/raw/2026-06", "--out", "/out"]
+CMD ["run", "--data", "/app/data/raw/2026-08", "--out", "/out"]

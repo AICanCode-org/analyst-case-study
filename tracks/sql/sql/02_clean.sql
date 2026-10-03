@@ -43,7 +43,7 @@ CREATE OR REPLACE VIEW s5_in_period AS
 SELECT * FROM s4_consistent
 WHERE CAST(started_at AS DATE) BETWEEN getvariable('period_start') AND getvariable('period_end');
 
-CREATE OR REPLACE TABLE sessions AS
+CREATE OR REPLACE VIEW s6_known_user AS
 SELECT
     s.session_id,
     CAST(s.user_id AS BIGINT) AS user_id,
@@ -53,8 +53,13 @@ SELECT
     isoyear(s.started_at) || '-W' || lpad(CAST(week(s.started_at) AS VARCHAR), 2, '0') AS week,
     strftime(s.started_at, '%Y-%m') AS month
 FROM s5_in_period AS s
-WHERE CAST(s.user_id AS BIGINT) IN (SELECT user_id FROM users)
-ORDER BY s.session_id;
+WHERE CAST(s.user_id AS BIGINT) IN (SELECT user_id FROM users);
+
+-- v1.1: weeks with known-broken tracking are not analysed (contract cleaning.exclude_weeks)
+CREATE OR REPLACE TABLE sessions AS
+SELECT * FROM s6_known_user
+WHERE week NOT IN (SELECT value FROM cfg_exclude_weeks)
+ORDER BY session_id;
 
 -- events --------------------------------------------------------------------------------------
 CREATE OR REPLACE VIEW e1_known AS
@@ -128,7 +133,7 @@ SELECT * FROM (VALUES
     (3, 'sessions_conflicting_ids', (SELECT count(DISTINCT session_id) FROM s3_deduplicated)
         - (SELECT count(*) FROM s4_consistent)),
     (4, 'sessions_out_of_period', (SELECT count(*) FROM s4_consistent) - (SELECT count(*) FROM s5_in_period)),
-    (5, 'sessions_orphan_user', (SELECT count(*) FROM s5_in_period) - (SELECT count(*) FROM sessions)),
+    (5, 'sessions_orphan_user', (SELECT count(*) FROM s5_in_period) - (SELECT count(*) FROM s6_known_user)),
     (6, 'sessions_unknown_channel', (SELECT count(*) FROM sessions WHERE channel = 'unknown')),
     (7, 'users_missing_signup_channel', (SELECT count(*) FROM users WHERE signup_channel IS NULL)),
     (8, 'users_city_variants_merged', (SELECT count(DISTINCT city) FROM raw_users) - (SELECT count(DISTINCT city) FROM users)),
@@ -143,6 +148,7 @@ SELECT * FROM (VALUES
     (17, 'orders_without_checkout', (
         SELECT count(*) FROM orders
         WHERE session_id NOT IN (SELECT session_id FROM events WHERE event_name = 'checkout')
-    ))
+    )),
+    (18, 'sessions_excluded_week', (SELECT count(*) FROM s6_known_user) - (SELECT count(*) FROM sessions))
 ) AS t (position, issue, n)
 ORDER BY position;

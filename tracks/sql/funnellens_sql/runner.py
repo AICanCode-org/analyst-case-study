@@ -22,11 +22,12 @@ TRACK = Path(__file__).resolve().parents[1]
 REPO = TRACK.parents[1]
 SQL_DIR = TRACK / "sql"
 DEFAULT_CONTRACT = REPO / "contract" / "data-contract.yaml"
-SCRIPTS = ["01_load.sql", "02_clean.sql", "03_metrics.sql", "04_stats.sql", "05_answers.sql"]
+SCRIPTS = ["01_load.sql", "02_clean.sql", "03_metrics.sql", "04_stats.sql", "05_answers.sql", "06_monitoring.sql"]
+PAYMENT_METHODS = "07_payment_methods.sql"  # v1.1, only when the export has the column
 TABLES = ["users", "sessions", "events", "orders"]
 DEVICES = ["desktop", "mobile"]
 IDENT = re.compile(r"^[a-z_][a-z0-9_]*$")
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 
 
 class ContractError(Exception):
@@ -64,6 +65,14 @@ def ident(value: str) -> str:
     return value
 
 
+DEFAULT_MONITORING = {"max_relative_deviation": 0.30, "max_days_behind": 2}
+
+
+def monitoring_cfg(contract):
+    """v1.1 section; a 1.0 contract has none, so the defaults apply."""
+    return contract.get("monitoring", DEFAULT_MONITORING)
+
+
 def prepare(con: duckdb.DuckDBPyConnection, data_dir: str | os.PathLike, contract: dict, export: dict) -> None:
     for table in TABLES:
         path = Path(data_dir) / f"{table}.csv"
@@ -76,15 +85,20 @@ def prepare(con: duckdb.DuckDBPyConnection, data_dir: str | os.PathLike, contrac
     con.execute("SET VARIABLE sample_rate = CAST(? AS DOUBLE)", [export["sample_rate"]])
     for key in ("alpha", "z_975", "rebuild_min_monthly_uplift_inr"):
         con.execute(f"SET VARIABLE {key} = CAST(? AS DOUBLE)", [contract["analysis"][key]])
+    for key in ("max_relative_deviation", "max_days_behind"):
+        con.execute(f"SET VARIABLE {key} = CAST(? AS DOUBLE)", [monitoring_cfg(contract)[key]])
     cleaning = contract["cleaning"]
     for name, key in (
         ("cfg_devices", "devices"),
         ("cfg_channels", "channels"),
         ("cfg_unknown_channels", "unknown_channel_values"),
         ("cfg_steps", "steps"),
+        ("cfg_exclude_weeks", "exclude_weeks"),  # v1.1
     ):
         con.execute(f"CREATE OR REPLACE TABLE {name} (value VARCHAR)")
-        con.executemany(f"INSERT INTO {name} VALUES (?)", [[v] for v in cleaning[key]])
+        values = [[v] for v in cleaning.get(key, [])]
+        if values:
+            con.executemany(f"INSERT INTO {name} VALUES (?)", values)
     con.execute("CREATE OR REPLACE TABLE cfg_city_aliases (alias VARCHAR, canonical VARCHAR)")
     con.executemany("INSERT INTO cfg_city_aliases VALUES (?, ?)", list(cleaning["city_aliases"].items()))
 
@@ -238,6 +252,34 @@ def build_answers(con: duckdb.DuckDBPyConnection, checks: list[dict], contract: 
         }
         for r in rows(con, "SELECT * FROM weekly")
     ]
+    fresh = one(con, "SELECT * FROM freshness")
+    monitoring = {
+        "freshness": {
+            "period_end": fresh["period_end"].isoformat(),
+            "last_session_date": fresh["last_session_date"].isoformat(),
+            "days_behind": int(fresh["days_behind"]),
+            "stale": bool(fresh["stale"]),
+        },
+        "excluded_weeks": list(contract["cleaning"].get("exclude_weeks", [])),
+        "max_relative_deviation": monitoring_cfg(contract)["max_relative_deviation"],
+        "weeks": [
+            {
+                "week": r["week"],
+                "sessions": int(r["sessions"]),
+                "mobile_checkout_given_cart": num(r["mobile_checkout_given_cart"]),
+            }
+            for r in rows(con, "SELECT * FROM monitoring_weeks")
+        ],
+        "medians": {k: num(v) for k, v in one(con, "SELECT * FROM monitoring_medians").items()},
+        "anomalies": rows(con, "SELECT * FROM monitoring_anomalies"),
+    }
+    payment_methods = None
+    if "payment_method" in {r[0] for r in con.execute("DESCRIBE orders").fetchall()}:
+        run_script(con, PAYMENT_METHODS)
+        by_device: dict = {d: {} for d in DEVICES}
+        for r in rows(con, "SELECT * FROM payment_methods"):
+            by_device[r["device"]][r["method"]] = int(r["orders"])
+        payment_methods = {"by_device": by_device}
     opp = one(con, "SELECT * FROM opportunity")
     dec = one(con, "SELECT * FROM decision")
     issues = {r["issue"]: int(r["n"]) for r in rows(con, "SELECT issue, n FROM issues ORDER BY position")}
@@ -297,6 +339,8 @@ def build_answers(con: duckdb.DuckDBPyConnection, checks: list[dict], contract: 
             "reasons": list(dec["reasons"]),
             "thresholds": {"alpha": a["alpha"], "rebuild_min_monthly_uplift_inr": a["rebuild_min_monthly_uplift_inr"]},
         },
+        "monitoring": monitoring,  # v1.1
+        "payment_methods": payment_methods,  # v1.1
     }
 
 
