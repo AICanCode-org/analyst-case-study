@@ -43,3 +43,17 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
 * **How I verified it:** `scripts/doctor.sh` all green for the R track; `make lint test` (all skipped).
 * **Time saved / lost (honest guess):** saved ~20 minutes.
 * **What I learned:** the project's own install target is the source of truth, not a generic answer.
+
+### 2026-07-02 · Phase 1 · Attacking the decision rule
+* **Tool / model:** Claude (chat)
+* **Prompt (summary or paste):**
+  > Prompt 3 of Phase 1 with my draft decision rule.
+* **What it produced:** six objections: multiple comparisons, a one-sided test, no minimum effect,
+  sampling, observational data, "use Bayesian methods instead".
+* **What I kept / changed / rejected, and why:** kept "no minimum effect" (added the ₹25 lakh
+  threshold from the rebuild cost) and "observational" (added the experiment outcome); kept one
+  primary test to answer multiple comparisons. Rejected the one-sided test (we would also want to know
+  if mobile were better) and the Bayesian rewrite (not wrong, but not what the team can review).
+* **How I verified it:** every remaining objection maps to a line in requirements §4 or §7.
+* **Time saved / lost (honest guess):** saved ~30 minutes of review later.
+* **What I learned:** a threshold in rupees is what turns "significant" into a decision.
