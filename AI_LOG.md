@@ -68,3 +68,27 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
 * **How I verified it:** recomputed by hand and with `statsmodels.stats.contingency_tables.StratifiedTable`.
 * **Time saved / lost (honest guess):** saved ~20 minutes of reading; the wrong number would have cost more.
 * **What I learned:** never trust arithmetic in an explanation; recompute every example.
+
+### 2026-07-06 · Phase 3 · A "simpler" timestamp parser
+* **Tool / model:** Copilot in VS Code
+* **Prompt (summary or paste):**
+  > Prompt 1 of Phase 3: implement the session timestamp rule of questions.md §2 (two formats, day first).
+* **What it produced:** `pd.to_datetime(df["started_at"], errors="coerce")` in one line.
+* **What I kept / changed / rejected, and why:** rejected. Format inference read `12/06/2026 10:15`
+  month first (6 December, then dropped as out of period instead of counted as 12 June), and it accepted
+  texts the spec calls bad. Wrote one explicit `format=` per pattern and combined them instead.
+* **How I verified it:** the tiny fixture's expected counts (`sessions_bad_timestamp` 1) and the data
+  test on 2026-06 (80 bad timestamps), both red with the one-liner.
+* **Time saved / lost (honest guess):** lost ~15 minutes, gained a test I would not have written.
+* **What I learned:** a cleaning shortcut is a spec change; the fixture is what catches it.
+### 2026-07-08 · Phase 3 · The CMH variance formula
+* **Tool / model:** ChatGPT (free tier)
+* **Prompt (summary or paste):**
+  > Prompt 2 of Phase 3: the Robins-Breslow-Greenland confidence interval for the Mantel-Haenszel odds ratio.
+* **What it produced:** the formula and a function; the variance term mixed up P·S and Q·R.
+* **What I kept / changed / rejected, and why:** kept the structure; fixed the term from the 1986
+  paper's notation.
+* **How I verified it:** `contract/fixtures/stats-cases.json` (CI 0.616-0.810 to 1e-9) and
+  `statsmodels.stats.contingency_tables.StratifiedTable(...).oddsratio_pooled_confint()`.
+* **Time saved / lost (honest guess):** saved ~30 minutes.
+* **What I learned:** the stats fixture is the only acceptable judge of a formula.
