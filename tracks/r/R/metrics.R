@@ -4,42 +4,64 @@ STEPS <- c("view", "cart", "checkout", "purchase")
 DEVICES <- c("desktop", "mobile")
 
 session_funnel <- function(clean) {
-  # TODO(M3) session_funnel: one row per clean session with view/cart/checkout/purchase flags; each step
-  # requires the previous one (a purchase needs a checkout). Spec: contract/questions.md §3; tests: metrics.
-  stop("TODO(M3) session_funnel: see the comment above")
+  has <- function(step) clean$sessions$session_id %in% clean$events$session_id[clean$events$event_name == step]
+  f <- clean$sessions[, c("session_id", "device", "channel", "week", "month")]
+  f$view <- has("view")
+  f$cart <- f$view & has("cart")
+  f$checkout <- f$cart & has("checkout")
+  f$purchase <- f$checkout & (f$session_id %in% clean$orders$session_id)
+  f
 }
 
-ratio <- function(a, b) {
-  # TODO(M3) ratio: a / b, or missing (NULL) when b is 0. Spec: contract/questions.md §3; tests: metrics.
-  stop("TODO(M3) ratio: see the comment above")
-}
+ratio <- function(a, b) if (b > 0) a / b else NULL
 
 funnel_counts <- function(df) {
-  # TODO(M3) funnel_counts: sessions and the four step counts of a group of sessions. Spec:
-  # contract/questions.md §3; tests: metrics.
-  stop("TODO(M3) funnel_counts: see the comment above")
+  list(sessions = nrow(df), view = sum(df$view), cart = sum(df$cart),
+       checkout = sum(df$checkout), purchase = sum(df$purchase))
 }
 
 with_rates <- function(c) {
-  # TODO(M3) with_rates: conversion = purchase / sessions; step rates are step / previous step; a rate of 0/0 is
-  # missing (null), never 0. Spec: contract/questions.md §3; tests: metrics.
-  stop("TODO(M3) with_rates: see the comment above")
+  c$conversion <- ratio(c$purchase, c$sessions)
+  c$step_rates <- list(view = ratio(c$view, c$sessions), cart = ratio(c$cart, c$view),
+                       checkout = ratio(c$checkout, c$cart), purchase = ratio(c$purchase, c$checkout))
+  c
 }
 
 funnel_by_device <- function(f, clean) {
-  # TODO(M3) funnel_by_device: desktop, mobile and all, with revenue in paise; mobile shares of sessions and
-  # revenue. Spec: contract/questions.md §3; tests: metrics.
-  stop("TODO(M3) funnel_by_device: see the comment above")
+  revenue <- dplyr::inner_join(clean$orders, clean$sessions[, c("session_id", "device")], by = "session_id")
+  out <- list()
+  for (device in c("all", DEVICES)) {
+    part <- if (device == "all") f else f[f$device == device, ]
+    paise <- if (device == "all") revenue$amount_paise else revenue$amount_paise[revenue$device == device]
+    c <- funnel_counts(part)
+    c$revenue_paise <- sum(paise)
+    out[[device]] <- with_rates(c)
+  }
+  list(
+    steps = I(c("sessions", STEPS)),
+    by_device = out,
+    mobile_share_of_sessions = out$mobile$sessions / out$all$sessions,
+    mobile_share_of_revenue = out$mobile$revenue_paise / out$all$revenue_paise
+  )
 }
 
 by_channel <- function(f) {
-  # TODO(M3) by_channel: the funnel per acquisition channel and device, channels in contract order. Spec:
-  # contract/questions.md §3; tests: metrics.
-  stop("TODO(M3) by_channel: see the comment above")
+  lapply(sort(unique(f$channel)), function(ch) {
+    part <- f[f$channel == ch, ]
+    list(channel = ch,
+         desktop = funnel_counts(part[part$device == "desktop", ]),
+         mobile = funnel_counts(part[part$device == "mobile", ]))
+  })
 }
 
 weekly <- function(f) {
-  # TODO(M3) weekly: sessions, purchases and conversion per ISO week and device (week = ISO year + '-W' +
-  # 2-digit week). Spec: contract/questions.md §3; tests: metrics.
-  stop("TODO(M3) weekly: see the comment above")
+  lapply(sort(unique(f$week)), function(w) {
+    part <- f[f$week == w, ]
+    sessions <- lapply(stats::setNames(DEVICES, DEVICES), function(d) sum(part$device == d))
+    purchases <- lapply(stats::setNames(DEVICES, DEVICES), function(d) sum(part$purchase[part$device == d]))
+    conversion <- lapply(stats::setNames(DEVICES, DEVICES), function(d) {
+      if (sessions[[d]] > 0) purchases[[d]] / sessions[[d]] else NA
+    })
+    list(week = w, sessions = sessions, purchases = purchases, conversion = conversion)
+  })
 }

@@ -4,13 +4,6 @@
 # implement until they pass (green). See docs/phase-3.
 # ---------------------------------------------------------------------------
 PENDING <- c(
-  "test-unit-load.R" = "Phase 3 M1 - load the raw export as text",
-  "test-unit-clean.R" = "Phase 3 M1 - cleaning rules and the issue counts",
-  "test-unit-checks.R" = "Phase 3 M2 - data-contract checks",
-  "test-unit-metrics.R" = "Phase 3 M3 - funnel by device, channel and week",
-  "test-unit-stats.R" = "Phase 3 M4 - two-proportion z, CMH and Welch tests",
-  "test-unit-answers.R" = "Phase 3 M5 - answers.json and the decision",
-  "test-unit-cli.R" = "Phase 3 M5 - command line and exit codes",
   "test-data-golden.R" = "Phase 4 - golden answers on the real export",
   "test-data-invariants.R" = "Phase 4 - invariants on the real export",
   "test-data-contract-violations.R" = "Phase 4 - contract violations stop the run"

@@ -25,64 +25,97 @@ The formulas are in `contract/questions.md`.
 
 ## Q1 · Can we trust the export?
 
-TODO: the evidence and the caveat.
-
-```{r q1-can-we-trust-the-export}
-# TODO (Phase 3)
+```{r quality}
+issues <- data.frame(issue = names(a$data_quality$issues), rows = unlist(a$data_quality$issues))
+knitr::kable(issues, row.names = FALSE)
+checks <- do.call(rbind, lapply(a$data_quality$checks, function(c) {
+  data.frame(id = c$id, severity = c$severity, status = c$status, failing_rows = c$failing_rows)
+}))
+knitr::kable(checks)
 ```
 
 ## Q2 · The funnel by device
 
-TODO: the evidence and the caveat.
-
-```{r q2-the-funnel-by-device}
-# TODO (Phase 3)
+```{r funnel}
+rates <- do.call(rbind, lapply(c("desktop", "mobile"), function(d) {
+  r <- a$funnel$by_device[[d]]$step_rates
+  data.frame(device = d, step = factor(names(r), levels = names(r)), rate = unlist(r))
+}))
+ggplot(rates, aes(step, rate, fill = device)) +
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = palette) +
+  labs(title = "Mobile falls behind at the cart and payment steps", y = "share of the previous step")
 ```
+
+Mobile is `r pct(a$funnel$mobile_share_of_sessions)` of sessions but `r pct(a$funnel$mobile_share_of_revenue)` of revenue.
 
 ## Q3 · Is the mobile payment step worse?
 
-TODO: the evidence and the caveat.
-
-```{r q3-is-the-mobile-payment-step-}
-# TODO (Phase 3)
+```{r payment}
+p <- a$payment_step_test
 ```
+
+Mobile `r pct(p$mobile$rate)` vs desktop `r pct(p$desktop$rate)` of checkouts become purchases:
+`r sprintf("%+.1f", 100 * p$difference)` pp, 95 % CI [`r sprintf("%.1f", 100 * p$ci95[1])`,
+`r sprintf("%.1f", 100 * p$ci95[2])`] pp, z = `r sprintf("%.2f", p$z)`, p = `r format(p$p_value, digits = 2)`.
 
 ## Q4 · Compare like with like: within each acquisition channel
 
-TODO: the evidence and the caveat.
-
-```{r q4-compare-like-with-like-with}
-# TODO (Phase 3)
+```{r channels}
+ch <- do.call(rbind, lapply(a$by_channel$channels, function(c) {
+  do.call(rbind, lapply(c("desktop", "mobile"), function(d) {
+    n <- c[[d]]$checkout
+    data.frame(channel = c$channel, device = d, checkouts = n, pay_rate = if (n > 0) c[[d]]$purchase / n else NA)
+  }))
+}))
+ggplot(ch, aes(channel, pay_rate, fill = device)) +
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = palette) +
+  labs(title = "Within every channel, mobile pays less often after checkout", y = "purchase / checkout")
+cmh <- do.call(rbind, lapply(names(a$by_channel$cmh), function(s) {
+  t <- a$by_channel$cmh[[s]]
+  data.frame(step = s, odds_ratio_mh = t$odds_ratio_mh, ci_low = t$ci95[1], ci_high = t$ci95[2],
+             p_value = t$p_value, crude = t$crude_odds_ratio)
+}))
+knitr::kable(cmh, digits = 4)
 ```
 
 ## Q5 · Do mobile buyers spend less?
 
-TODO: the evidence and the caveat.
-
-```{r q5-do-mobile-buyers-spend-less}
-# TODO (Phase 3)
+```{r value}
+v <- a$order_value
 ```
+
+Mobile ₹`r format(round(v$mobile$mean_inr), big.mark = ",")` vs desktop
+₹`r format(round(v$desktop$mean_inr), big.mark = ",")` per order: Welch t = `r sprintf("%.2f", v$welch_t)`,
+df = `r round(v$df)`, p = `r sprintf("%.2f", v$p_value)`.
 
 ## Q6 · Is the weekly trend stable?
 
-TODO: the evidence and the caveat.
-
-```{r q6-is-the-weekly-trend-stable}
-# TODO (Phase 3)
+```{r weekly}
+w <- do.call(rbind, lapply(a$weekly, function(r) {
+  data.frame(week = r$week, device = c("desktop", "mobile"),
+             conversion = c(r$conversion$desktop, r$conversion$mobile))
+}))
+ggplot(w, aes(week, conversion, colour = device, group = device)) +
+  geom_line() +
+  scale_colour_manual(values = palette) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  labs(title = "Conversion per ISO week: no break or backfill")
 ```
 
 ## Q7 · What is the gap worth?
 
-TODO: the evidence and the caveat.
-
-```{r q7-what-is-the-gap-worth}
-# TODO (Phase 3)
+```{r opportunity}
+o <- a$opportunity
 ```
+
+If mobile paid like desktop within each channel: ₹`r sprintf("%.1f", o$monthly_revenue_uplift_inr / 1e5)` lakh per
+month (`r pct(o$uplift_share_of_mobile_revenue)` of mobile revenue).
 
 ## Q8 · Recommendation
 
-TODO: the evidence and the caveat.
+**`r a$decision$recommendation`** because `r paste(a$decision$reasons, collapse = ", ")`.
 
-```{r q8-recommendation}
-# TODO (Phase 3)
-```
+**Caveats.** Observational data: channel is the confounder we can see, not the only one. The uplift assumes
+mobile could reach desktop's within-channel payment rate, which only an experiment can show.

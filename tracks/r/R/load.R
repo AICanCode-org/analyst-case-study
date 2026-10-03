@@ -3,7 +3,17 @@
 TABLES <- c("users", "sessions", "events", "orders")
 
 load_raw <- function(data_dir, contract) {
-  # TODO(M1) load_raw: read every CSV as TEXT (no type guessing, empty strings stay empty strings); a missing
-  # file or column is a ContractError. Spec: contract/questions.md §1-2; tests: load.
-  stop("TODO(M1) load_raw: see the comment above")
+  raw <- list()
+  for (table in TABLES) {
+    path <- file.path(data_dir, paste0(table, ".csv"))
+    if (!file.exists(path)) stop(contract_error(sprintf("missing file %s", path)))
+    df <- readr::read_csv(path, col_types = readr::cols(.default = readr::col_character()),
+                          na = character(), trim_ws = FALSE, progress = FALSE)
+    missing <- setdiff(unlist(contract$raw[[table]]), names(df))
+    if (length(missing) > 0) {
+      stop(contract_error(sprintf("%s.csv is missing column(s) %s", table, paste(missing, collapse = ", "))))
+    }
+    raw[[table]] <- df
+  }
+  raw
 }
