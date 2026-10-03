@@ -105,9 +105,9 @@ clean_events <- function(raw, sessions, contract, issues) {
   issues$events_orphan_session <- sum(orphan)
   e <- e[!orphan, ]
 
-  first <- e %>%
-    dplyr::group_by(.data$session_id, .data$event_name) %>%
-    dplyr::summarise(first_at = min(.data$event_at), .groups = "drop") %>%
+  first <- e |>
+    dplyr::group_by(.data$session_id, .data$event_name) |>
+    dplyr::summarise(first_at = min(.data$event_at), .groups = "drop") |>
     dplyr::arrange(.data$session_id, .data$event_name)
   issues$events_repeated_steps <- nrow(e) - nrow(first)
 
