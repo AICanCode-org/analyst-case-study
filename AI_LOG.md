@@ -142,3 +142,28 @@ Cursor, Claude, a local Ollama model, ...) produced something you kept, changed 
 * **How I verified it:** a test per case in `tests/test_narrator.py` with the fake LLM server.
 * **Time saved / lost (honest guess):** saved ~1 hour of inventing adversarial cases.
 * **What I learned:** guardrails check facts and words, not emphasis; review stays human.
+
+### 2026-08-04 · Phase 7 · "Just map referral to unknown"
+* **Tool / model:** Copilot Chat
+* **Prompt (summary or paste):**
+  > The pipeline fails with sessions.channel.accepted (878 rows) on the August export. Fix it.
+* **What it produced:** a cleaning rule mapping any unexpected channel to `unknown`.
+* **What I kept / changed / rejected, and why:** rejected: it makes the check unable to fail and
+  would have hidden the referral programme inside `unknown`. Changed the contract instead (1.1.0,
+  `referral` accepted, the 1.0.0 file kept in `contract/history/`).
+* **How I verified it:** the 878 rows are all `referral`, which the data dictionary of 2026-08 lists;
+  `--backcompat` on 2026-06 still IDENTICAL.
+* **Time saved / lost (honest guess):** neutral.
+* **What I learned:** when a contract check fails, the first question is whether the data or the contract is wrong.
+### 2026-08-05 · Phase 7 · Post-mortem review
+* **Tool / model:** Claude (chat)
+* **Prompt (summary or paste):**
+  > Prompt 3 of Phase 7 with my draft post-mortem for 2026-W31.
+* **What it produced:** seven gaps; the useful ones: no detection time, an action item without an owner,
+  and no statement of the impact on the decision.
+* **What I kept / changed / rejected, and why:** kept those three; rejected "add anomaly detection with
+  machine learning" (the median rule found the incident; the problem was that nobody ran it weekly).
+* **How I verified it:** the impact numbers come from a run with `exclude_weeks: []` (uplift ₹14.1 vs
+  ₹14.3 lakh/month, recommendation unchanged).
+* **Time saved / lost (honest guess):** saved ~20 minutes.
+* **What I learned:** the most valuable action item was a schedule, not a model.

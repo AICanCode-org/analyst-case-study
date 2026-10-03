@@ -7,6 +7,25 @@ answers schema have their own versions, recorded in every `answers.json`.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-06
+### Added
+- The 2026-08 export (January to August 2026) and its golden answers (`contract/golden/answers-2026-08.json`).
+- Data contract 1.1.0: channel `referral`, `cleaning.exclude_weeks`, a `monitoring` section; 1.0.0
+  kept in `contract/history/`. A 1.0 contract is still accepted (no exclusion, default monitoring).
+- Answers schema 1.1 (additive): `monitoring` (freshness, weekly sessions and mobile
+  checkout-given-cart against the median, anomalies), `payment_methods` by device,
+  `data_quality.issues.sessions_excluded_week`.
+- Dashboard: a Monitoring tab and two narrator facts (monitoring result, top mobile payment method).
+- `docs/postmortem-2026-W31.md` (incident FL-2026-08), ADR-0006, the refresh section of the runbook.
+### Changed
+- Week 2026-W31 is excluded (broken mobile checkout tracking, app 8.14): 1,218 sessions.
+- `sessions_unknown_channel` is counted after the week exclusion (`questions.md` step 7, clarified
+  after a parity difference between tracks).
+- The default export is 2026-08 (`EXPORT` in `.env.example`, `DATA` in the Makefiles, Dockerfiles).
+### Compatibility
+- On 2026-06, every v1.0 field is unchanged (`scripts/parity.py --backcompat`); the v1.0 dashboard
+  reads v1.1 answers.
+
 ## [1.0.0] - 2026-07-22
 ### Added
 - The analysis of the 2026-06 export in three tracks with identical `answers.json` (Python: pandas,

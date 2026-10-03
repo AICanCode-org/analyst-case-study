@@ -47,3 +47,32 @@ Who this is for: whoever re-runs the analysis on a new export, or answers "is th
   `ghcr.io/<owner>/funnellens-{dashboard,python,sql,r}:X.Y.Z`; the optional Render job deploys the dashboard.
 - Roll back: redeploy the previous image tag (Render: *Manual Deploy* → the previous image URL), or
   `git switch --detach vX.Y.Z && docker compose up -d --build dashboard` locally.
+
+## 6. Monthly data refresh (v1.1)
+1. Run as in §1 with the new export. Exit 3? Follow §3: decide whether the data or the contract is
+   wrong before changing anything (2026-08: `referral` was a new channel → contract 1.1.0).
+2. Read `answers.monitoring` (the dashboard's **Monitoring** tab):
+   - **Freshness:** `stale: true` means the export ends more than `max_days_behind` days after the
+     last session; ask for a complete export before publishing.
+   - **Anomalies:** a full week more than 30 % away from the median in sessions or mobile
+     checkout-given-cart. Check the app release notes and marketing calendar for that week.
+3. Decide:
+   - **Real change** (a campaign, a holiday): publish, mention it in the memo.
+   - **Broken tracking** (events lost, orders still recorded): open an incident, write a post-mortem
+     (template: `docs/postmortem-2026-W31.md`), add the week to `cleaning.exclude_weeks` with a comment
+     naming the incident, bump the contract version, and quantify the effect on the decision by
+     running once with and once without the exclusion.
+4. New golden file: copy the agreed `answers.json` to `contract/golden/answers-<YYYY-MM>.json`, run
+   parity on all tracks and `--backcompat` against the previous golden file, update `EXPORT` in
+   `.env.example` and `DATA` in the Makefiles.
+5. Release a minor version (`v1.x.0`) when the schema gains fields; a major one if a field is removed
+   or changes meaning.
+
+## 7. Contract versions
+| Version | Changes | Kept at |
+|---|---|---|
+| 1.0.0 | initial contract (2026-06) | `contract/history/data-contract-1.0.0.yaml` |
+| 1.1.0 | channel `referral`, `cleaning.exclude_weeks` (2026-W31), `monitoring` | `contract/data-contract.yaml` |
+
+Every `answers.json` records `dataset.contract_version`. To reproduce an old result, run with
+`--contract contract/history/data-contract-<version>.yaml` on the export it names.
