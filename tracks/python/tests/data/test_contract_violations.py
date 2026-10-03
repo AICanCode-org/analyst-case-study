@@ -14,7 +14,7 @@ def append_line(path, line):
 
 def test_a_new_channel_value_stops_the_run(export_copy):
     data = export_copy(EXPORT_V10)
-    append_line(data / "sessions.csv", "S999999,1,mobile,referral,2026-06-30 10:00:00")
+    append_line(data / "sessions.csv", "S999999,1,mobile,affiliate,2026-06-30 10:00:00")
     with pytest.raises(ContractError, match=r"sessions.channel.accepted \(1 rows\)"):
         analyse(data)
 

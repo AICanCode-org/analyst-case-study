@@ -1,5 +1,6 @@
 """Phase 4 data test: the full 2026-06 export must reproduce the golden answers that the Python,
-SQL and R tracks agree on (contract/golden/answers-2026-06.json), and match the JSON Schema."""
+SQL and R tracks agree on (contract/golden/answers-2026-06.json), and match the JSON Schema.
+v1.1: that golden is the v1.0 file and stays frozen, so the comparison allows the additive v1.1 fields."""
 
 import importlib.util
 import json
@@ -22,7 +23,7 @@ def answers():
 
 def test_matches_the_golden_answers(answers):
     golden = json.loads((CONTRACT / "golden" / "answers-2026-06.json").read_text(encoding="utf-8"))
-    assert list(parity.diff(golden, json.loads(json.dumps(answers)))) == []
+    assert list(parity.diff(golden, json.loads(json.dumps(answers)), subset=True)) == []
 
 
 def test_matches_the_json_schema(answers):

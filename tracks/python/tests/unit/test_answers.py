@@ -15,7 +15,7 @@ CHANNELS = [
         "desktop": {"view": 80, "cart": 30, "checkout": 10, "purchase": 6},
     },
     {
-        "channel": "referral",
+        "channel": "affiliate",
         "mobile": {"view": 9, "cart": 3, "checkout": 2, "purchase": 1},
         "desktop": {"view": 0, "cart": 0, "checkout": 0, "purchase": 0},
     },

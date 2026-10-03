@@ -112,16 +112,17 @@ def clean_sessions(
     issues["sessions_orphan_user"] = int(orphan.sum())
     s = s[~orphan]
 
-    issues["sessions_unknown_channel"] = int((s["channel"] == "unknown").sum())
     iso = s["started_at"].map(lambda t: t.isocalendar())
-    return (
-        s.assign(
-            week=[f"{y}-W{w:02d}" for y, w, _ in iso],
-            month=s["started_at"].map(lambda t: t.strftime("%Y-%m")),
-        )
-        .sort_values("session_id")
-        .reset_index(drop=True)
+    s = s.assign(
+        week=[f"{y}-W{w:02d}" for y, w, _ in iso],
+        month=s["started_at"].map(lambda t: t.strftime("%Y-%m")),
     )
+    # v1.1: weeks with known-broken tracking are not analysed (contract cleaning.exclude_weeks)
+    excluded = s["week"].isin(contract["cleaning"].get("exclude_weeks", []))
+    issues["sessions_excluded_week"] = int(excluded.sum())
+    s = s[~excluded]
+    issues["sessions_unknown_channel"] = int((s["channel"] == "unknown").sum())  # v1.1: of the analysed sessions
+    return s.sort_values("session_id").reset_index(drop=True)
 
 
 def clean_events(raw: pd.DataFrame, sessions: pd.DataFrame, contract: dict, issues: dict) -> pd.DataFrame:
@@ -199,6 +200,7 @@ ISSUE_ORDER = [
     "orders_non_positive_amount",
     "orders_orphan_session",
     "orders_without_checkout",
+    "sessions_excluded_week",  # v1.1
 ]
 
 

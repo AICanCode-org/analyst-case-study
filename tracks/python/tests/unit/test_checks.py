@@ -27,7 +27,7 @@ def test_ratio_checks_report_the_observed_ratio(tiny, contract):
 
 def test_a_new_channel_value_fails_the_accepted_values_check(tiny, contract):
     clean, export = tiny
-    clean.sessions.loc[0, "channel"] = "referral"
+    clean.sessions.loc[0, "channel"] = "affiliate"
     assert statuses(run_checks(clean, export, contract))["sessions.channel.accepted"] == ["fail", 1]
 
 

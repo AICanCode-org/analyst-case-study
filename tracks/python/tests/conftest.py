@@ -27,6 +27,8 @@ REPO = Path(__file__).resolve().parents[3]
 CONTRACT = REPO / "contract"
 TINY = CONTRACT / "fixtures" / "tiny"
 EXPORT_V10 = REPO / "data" / "raw" / "2026-06"
+EXPORT_V11 = REPO / "data" / "raw" / "2026-08"
+CONTRACT_V10 = CONTRACT / "history" / "data-contract-1.0.0.yaml"
 EXPECTED = json.loads((CONTRACT / "fixtures" / "tiny-expected.json").read_text(encoding="utf-8"))
 STATS_CASES = json.loads((CONTRACT / "fixtures" / "stats-cases.json").read_text(encoding="utf-8"))
 Z = 1.959963984540054

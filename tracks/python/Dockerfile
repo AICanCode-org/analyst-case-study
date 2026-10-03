@@ -1,6 +1,6 @@
 # FunnelLens pipeline, Python track. Build from the repo root:
 #   docker build -f tracks/python/Dockerfile -t funnellens-python:local .
-#   docker run --rm -v "$PWD/data:/app/data:ro" -v "$PWD/out:/out" funnellens-python:local run --data /app/data/raw/2026-06 --out /out
+#   docker run --rm -v "$PWD/data:/app/data:ro" -v "$PWD/out:/out" funnellens-python:local run --data /app/data/raw/2026-08 --out /out
 # Few layers on purpose: one for dependencies, one for the code (cheap rebuilds, small images).
 FROM scratch AS src
 COPY contract /app/contract
@@ -17,4 +17,4 @@ COPY --from=src /app /app
 WORKDIR /app/tracks/python
 USER 10001
 ENTRYPOINT ["python", "-m", "funnellens"]
-CMD ["run", "--data", "/app/data/raw/2026-06", "--out", "/out"]
+CMD ["run", "--data", "/app/data/raw/2026-08", "--out", "/out"]

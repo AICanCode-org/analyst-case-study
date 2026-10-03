@@ -1,6 +1,6 @@
 # Python track. Same targets in every track: install, lint, test, coverage, run (+ report).
 PY ?= .venv/bin/python
-DATA ?= ../../data/raw/2026-06
+DATA ?= ../../data/raw/2026-08
 OUT ?= out
 
 .PHONY: install lint test coverage run report clean

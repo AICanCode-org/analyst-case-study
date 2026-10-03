@@ -8,9 +8,10 @@ from . import __version__
 from .clean import Clean
 from .contract import Export
 from .metrics import DEVICES, by_channel, funnel_by_device, session_funnel, weekly
+from .monitoring import monitoring, payment_methods
 from .stats import cmh, two_proportion, welch
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 CMH_STEPS = {"cart_given_view": ("cart", "view"), "purchase_given_checkout": ("purchase", "checkout")}
 
 
@@ -153,4 +154,6 @@ def build_answers(clean: Clean, checks: list[dict], export: Export, contract: di
         "weekly": weekly(sf),
         "opportunity": opp,
         "decision": decision(channel, opp, contract),
+        "monitoring": monitoring(sf, clean, export, contract),  # v1.1
+        "payment_methods": payment_methods(clean),  # v1.1
     }
