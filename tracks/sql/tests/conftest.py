@@ -12,13 +12,6 @@ from funnellens_sql import runner
 # watch the tests fail (red), implement until they pass (green). See docs/phase-3.
 # ---------------------------------------------------------------------------
 PENDING: dict[str, str] = {
-    "test_load.py": "Phase 3 M1 - load the raw export as text",
-    "test_clean.py": "Phase 3 M1 - cleaning rules and the issue counts",
-    "test_checks.py": "Phase 3 M2 - data-contract checks",
-    "test_metrics.py": "Phase 3 M3 - funnel by device, channel and week",
-    "test_stats.py": "Phase 3 M4 - two-proportion z, CMH and Welch tests",
-    "test_answers.py": "Phase 3 M5 - answers.json and the decision",
-    "test_cli.py": "Phase 3 M5 - command line and exit codes",
     "test_golden.py": "Phase 4 - golden answers on the real export",
     "test_invariants.py": "Phase 4 - invariants on the real export",
     "test_contract_violations.py": "Phase 4 - contract violations stop the run",
